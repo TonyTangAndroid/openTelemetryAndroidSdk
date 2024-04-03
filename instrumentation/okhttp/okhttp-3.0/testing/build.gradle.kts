@@ -15,7 +15,7 @@ dependencies {
     api(libs.opentelemetry.sdk.testing)
     implementation(libs.opentelemetry.exporter.otlp)
     implementation(libs.opentelemetry.exporter.logging)
-    api("io.opentelemetry:opentelemetry-extension-trace-propagators:1.24.0")
+    api(libs.opentelemetry.extension.trace.propagators)
 
     androidTestImplementation(libs.gson)
     androidTestImplementation(libs.truth)
