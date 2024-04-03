@@ -2,6 +2,7 @@ package com.example.hello_otel
 
 import android.app.Application
 import androidx.fragment.app.Fragment
+import com.google.gson.annotations.SerializedName
 import io.opentelemetry.api.GlobalOpenTelemetry
 import io.opentelemetry.api.baggage.Baggage
 import io.opentelemetry.api.trace.SpanBuilder
@@ -11,14 +12,19 @@ import io.opentelemetry.context.Context
 import io.opentelemetry.context.Scope
 import io.opentelemetry.context.propagation.ContextPropagators
 import io.opentelemetry.extension.trace.propagation.JaegerPropagator
+import io.opentelemetry.instrumentation.library.okhttp.v3_0.internal.OkHttp3Singletons
 import io.opentelemetry.sdk.OpenTelemetrySdk
 import io.opentelemetry.sdk.testing.exporter.InMemorySpanExporter
 import io.opentelemetry.sdk.trace.SdkTracerProvider
 import io.opentelemetry.sdk.trace.SpanProcessor
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor
 import io.reactivex.Single
+import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
 import timber.log.Timber
@@ -32,16 +38,29 @@ interface RestApi {
     fun login(@Path("userName") userName: String): Single<UserToken>
 }
 
-data class UserToken(val token: String)
+data class UserToken(@SerializedName("token") val token: String)
 
 interface AppScope {
 
     fun restApi(): RestApi
 }
 
-class DemoApp : Application() {
+class DemoApp : Application(), AppScope {
 
     private val server = MockWebServer()
+    private val restApi by lazy {
+        val client: OkHttpClient = OkHttpClient.Builder()
+                //Pay attention that this is done without any context related to open telemetry.
+                .addNetworkInterceptor(OkHttp3Singletons.TRACING_INTERCEPTOR)
+                .build()
+        Retrofit.Builder()
+                .client(client)
+                .baseUrl(server.url("/"))
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build().create(RestApi::class.java)
+
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -97,5 +116,9 @@ class DemoApp : Application() {
     private fun plantTimberLogger() {
         Timber.plant(Timber.DebugTree())
         Timber.i("Demo App started")
+    }
+
+    override fun restApi(): RestApi {
+        return restApi
     }
 }

@@ -33,6 +33,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+    implementation(project(":instrumentation:okhttp:okhttp-3.0:library"))
 
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)
