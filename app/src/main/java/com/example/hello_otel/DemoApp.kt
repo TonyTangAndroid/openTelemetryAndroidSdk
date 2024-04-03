@@ -121,4 +121,11 @@ class DemoApp : Application(), AppScope {
     override fun restApi(): RestApi {
         return restApi
     }
+
+    companion object {
+
+        fun appScope(context: android.content.Context): AppScope {
+            return context.applicationContext as AppScope
+        }
+    }
 }
