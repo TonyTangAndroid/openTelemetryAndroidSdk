@@ -12,6 +12,10 @@ android {
 
 dependencies {
     implementation(libs.timber)
+    api(libs.opentelemetry.sdk.testing)
+    implementation(libs.opentelemetry.exporter.otlp)
+    implementation(libs.opentelemetry.exporter.logging)
+    api(libs.opentelemetry.extension.trace.propagators)
 
     api(project(":android-agent"))
 

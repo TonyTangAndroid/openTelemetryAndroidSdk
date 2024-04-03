@@ -15,9 +15,11 @@ material = "1.11.0"
 constraintlayout = "2.1.4"
 navigationFragmentKtx = "2.7.7"
 navigationUiKtx = "2.7.7"
+opentelemetryExtensionTracePropagatorsVersion = "1.24.0"
 timberVersion = "5.0.1"
 
 [libraries]
+opentelemetry-extension-trace-propagators = { module = "io.opentelemetry:opentelemetry-extension-trace-propagators", version.ref = "opentelemetryExtensionTracePropagatorsVersion" }
 opentelemetry-platform = { module = "io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom-alpha", version.ref = "opentelemetry-alpha" }
 androidx-appcompat = "androidx.appcompat:appcompat:1.6.1"
 androidx-navigation-fragment = "androidx.navigation:navigation-fragment:2.7.7"
