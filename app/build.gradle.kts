@@ -19,6 +19,13 @@ dependencies {
     api(libs.okhttp.mockwebserver)
     api(project(":android-agent"))
     api(libs.annotationx)
+    api (libs.retrofit)
+    api (libs.converter.gson)
+    api (libs.retrofit2.adapter.rxjava2)
+    api(libs.rxjava)
+    api(libs.rxandroid)
+    api(libs.gson)
+    api(libs.rxrelay)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

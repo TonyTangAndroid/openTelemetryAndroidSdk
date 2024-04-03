@@ -23,7 +23,16 @@ import timber.log.Timber
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
-class DemoApp : Application() {
+interface RestApi{
+
+    @GET("posts/{id}")
+    fun getPostById(@Path("id") postId: Int): Call<Post>
+}
+interface AppScope{
+
+    fun restApi():
+}
+class DemoApp : Application()  {
 
     private val server = MockWebServer()
 
