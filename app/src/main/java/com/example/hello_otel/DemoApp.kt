@@ -4,7 +4,9 @@ import android.app.Application
 import androidx.fragment.app.Fragment
 import io.opentelemetry.api.GlobalOpenTelemetry
 import io.opentelemetry.context.propagation.ContextPropagators
+import io.opentelemetry.extension.trace.propagation.JaegerPropagator
 import io.opentelemetry.sdk.OpenTelemetrySdk
+import io.opentelemetry.sdk.testing.exporter.InMemorySpanExporter
 import io.opentelemetry.sdk.trace.SdkTracerProvider
 import io.opentelemetry.sdk.trace.SpanProcessor
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor
@@ -18,10 +20,10 @@ class DemoApp : Application() {
     override fun onCreate() {
         super.onCreate()
         plantTimberLogger()
-        initOpenTelmetry()
+        initOpenTelemetry()
     }
 
-    private fun initOpenTelmetry() {
+    private fun initOpenTelemetry() {
 
 
 
@@ -32,7 +34,6 @@ class DemoApp : Application() {
         val sdkTracerProvider = SdkTracerProvider.builder()
                 .addSpanProcessor(spanProcessor)
                 .build()
-        //Make `uber-trace-id` attached.
         val contextPropagators = ContextPropagators.create(jaegerPropagator)
         val telemetrySdk = OpenTelemetrySdk.builder().setTracerProvider(sdkTracerProvider)
                 .setPropagators(contextPropagators)
