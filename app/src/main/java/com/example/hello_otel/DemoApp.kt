@@ -18,7 +18,9 @@ import io.opentelemetry.sdk.testing.exporter.InMemorySpanExporter
 import io.opentelemetry.sdk.trace.SdkTracerProvider
 import io.opentelemetry.sdk.trace.SpanProcessor
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor
+import io.reactivex.Completable
 import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -57,7 +59,7 @@ class DemoApp : Application(), AppScope {
                 .client(client)
                 .baseUrl(server.url("/"))
                 .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .build().create(RestApi::class.java)
 
     }
@@ -70,14 +72,18 @@ class DemoApp : Application(), AppScope {
     }
 
     private fun initServer() {
-        server.start()
-        repeat(10) {
-            server.enqueue(MockResponse().setResponseCode(200).setBody("""
+        Completable.fromAction {
+            server.start()
+            Timber.i(" $restApi is initialized.")
+            repeat(10) {
+                server.enqueue(MockResponse().setResponseCode(200).setBody("""
                 {
                     "token":"1234"
                 }
             """.trimIndent()))
-        }
+            }
+        }.subscribeOn(Schedulers.computation()).subscribe()
+
     }
 
     private fun initOpenTelemetry() {

@@ -43,7 +43,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun login(view: View) {
 
-        DemoApp.appScope(application).restApi().login("tony_tang")
+        DemoApp.appScope(application).restApi()
+                .login("tony_tang")
                 .doOnSubscribe {
                     //do on login
                 }
