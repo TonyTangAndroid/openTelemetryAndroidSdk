@@ -11,13 +11,21 @@ android {
 }
 
 dependencies {
-    implementation(libs.timber)
+    api(libs.timber)
     api(libs.opentelemetry.sdk.testing)
-    implementation(libs.opentelemetry.exporter.otlp)
-    implementation(libs.opentelemetry.exporter.logging)
+    api(libs.opentelemetry.exporter.otlp)
+    api(libs.opentelemetry.exporter.logging)
     api(libs.opentelemetry.extension.trace.propagators)
-
+    api(libs.okhttp.mockwebserver)
     api(project(":android-agent"))
+    api(libs.annotationx)
+
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
 
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)
@@ -32,10 +40,4 @@ dependencies {
     androidTestImplementation(libs.truth)
 
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.navigation.fragment.ktx)
-    implementation(libs.androidx.navigation.ui.ktx)
 }
