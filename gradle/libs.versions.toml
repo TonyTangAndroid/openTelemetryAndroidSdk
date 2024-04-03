@@ -1,5 +1,6 @@
 [versions]
 adapterRxjava2Version = "2.9.0"
+autodisposeVersion = "1.4.1"
 converterGsonVersion = "2.9.0"
 opentelemetry = "1.36.0"
 opentelemetry-alpha = "2.1.0-alpha"
@@ -25,6 +26,9 @@ rxrelayVersion = "2.1.1"
 timberVersion = "5.0.1"
 
 [libraries]
+autodispose = { module = "com.uber.autodispose:autodispose", version.ref = "autodisposeVersion" }
+autodispose-android = { module = "com.uber.autodispose:autodispose-android", version.ref = "autodisposeVersion" }
+autodispose-android-archcomponents = { module = "com.uber.autodispose:autodispose-android-archcomponents", version.ref = "autodisposeVersion" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGsonVersion" }
 opentelemetry-extension-trace-propagators = { module = "io.opentelemetry:opentelemetry-extension-trace-propagators", version.ref = "opentelemetryExtensionTracePropagatorsVersion" }
 opentelemetry-platform = { module = "io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom-alpha", version.ref = "opentelemetry-alpha" }

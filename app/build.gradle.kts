@@ -26,6 +26,11 @@ dependencies {
     api(libs.rxandroid)
     api(libs.gson)
     api(libs.rxrelay)
+    implementation(libs.autodispose)
+    implementation(libs.autodispose.android.archcomponents)
+    implementation(libs.autodispose.android)
+
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
