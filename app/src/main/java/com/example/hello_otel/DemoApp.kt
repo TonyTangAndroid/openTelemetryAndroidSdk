@@ -16,23 +16,30 @@ import io.opentelemetry.sdk.testing.exporter.InMemorySpanExporter
 import io.opentelemetry.sdk.trace.SdkTracerProvider
 import io.opentelemetry.sdk.trace.SpanProcessor
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor
+import io.reactivex.Single
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import retrofit2.http.GET
+import retrofit2.http.Path
 import timber.log.Timber
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
-interface RestApi{
+interface RestApi {
 
-    @GET("posts/{id}")
-    fun getPostById(@Path("id") postId: Int): Call<Post>
+    @GET("auth/{userName}")
+    fun login(@Path("userName") userName: String): Single<UserToken>
 }
-interface AppScope{
 
-    fun restApi():
+data class UserToken(val token: String)
+
+interface AppScope {
+
+    fun restApi(): RestApi
 }
-class DemoApp : Application()  {
+
+class DemoApp : Application() {
 
     private val server = MockWebServer()
 
