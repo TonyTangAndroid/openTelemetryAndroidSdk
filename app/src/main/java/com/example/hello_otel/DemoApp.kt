@@ -72,7 +72,11 @@ class DemoApp : Application(), AppScope {
     private fun initServer() {
         server.start()
         repeat(10) {
-            server.enqueue(MockResponse().setResponseCode(200))
+            server.enqueue(MockResponse().setResponseCode(200).setBody("""
+                {
+                    "token":"1234"
+                }
+            """.trimIndent()))
         }
     }
 
