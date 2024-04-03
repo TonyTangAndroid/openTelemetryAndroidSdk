@@ -48,7 +48,6 @@ class MainActivity : AppCompatActivity() {
                 .doOnSubscribe {
                     //do on login
                 }
-                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .autoDispose(AndroidLifecycleScopeProvider.from(this))
                 .subscribe(Consumer {
