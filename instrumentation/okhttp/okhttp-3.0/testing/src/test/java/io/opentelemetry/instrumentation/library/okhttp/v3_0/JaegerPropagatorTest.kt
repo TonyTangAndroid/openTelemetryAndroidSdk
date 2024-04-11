@@ -69,14 +69,8 @@ class JaegerPropagatorTest {
 
         //step 2: start trace
         val tracer: Tracer = GlobalOpenTelemetry.getTracer("TestTracer")
-        val baggage = Baggage.builder()
-                .put("user.name", "jack")
-                .put("user.id", "321")
-                .build()
-        Context.current().with(baggage).makeCurrent().use {
+        Context.current().with(rootBaggage()).makeCurrent().use {
             val rootSpan: Span = triggerRootSpan(tracer, server)
-
-
             //assert
             assert(inMemorySpanExporter, server, rootSpan)
         }
@@ -85,6 +79,7 @@ class JaegerPropagatorTest {
         server.shutdown()
         inMemorySpanExporter.reset()
     }
+
 
     private fun triggerRootSpan(tracer: Tracer, server: MockWebServer): Span {
         val rootSpan: Span = rootSpan(tracer)
@@ -177,4 +172,10 @@ class JaegerPropagatorTest {
     }
 
 
+    private fun rootBaggage(): Baggage {
+        return Baggage.builder()
+                .put("user.name", "jack")
+                .put("user.id", "321")
+                .build()
+    }
 }
