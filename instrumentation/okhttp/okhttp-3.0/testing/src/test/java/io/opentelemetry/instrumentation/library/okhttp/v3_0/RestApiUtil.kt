@@ -14,6 +14,7 @@ object RestApiUtil {
     fun restApi(server: MockWebServer): RestApi {
         val client: OkHttpClient = OkHttpClient.Builder()
                 .addInterceptor(OkHttp3Singletons.TRACING_INTERCEPTOR)
+                .addInterceptor(FixedTestInterceptor())
                 .build()
         return Retrofit.Builder()
                 .client(client)

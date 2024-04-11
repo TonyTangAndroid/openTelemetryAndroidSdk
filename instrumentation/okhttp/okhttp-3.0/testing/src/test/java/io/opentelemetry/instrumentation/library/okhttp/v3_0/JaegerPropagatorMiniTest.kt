@@ -124,7 +124,7 @@ class JaegerPropagatorMiniTest {
     private fun assertRoot(rootSpan: Span) {
         val request = server.takeRequest()
         //affirm
-        assertThat(request.headers).hasSize(8)
+        assertThat(request.headers).hasSize(9)
         val list: List<Pair<String, String>> = request.headers.filter { it.first.startsWith("uberctx") }
         assertThat(list).containsExactlyElementsIn(
                 listOf(Pair("uberctx-user.id", "321"), Pair("uberctx-user.name", "jack"))
@@ -144,7 +144,7 @@ class JaegerPropagatorMiniTest {
         assertThat(spanExporter.finishedSpanItems).hasSize(4)
         val request = server.takeRequest()
         //affirm
-        assertThat(request.headers).hasSize(7)
+        assertThat(request.headers).hasSize(8)
         val list: List<Pair<String, String>> = request.headers.filter { it.first.startsWith("uberctx") }
         assertThat(list).containsExactlyElementsIn(
                 listOf(Pair("uberctx-user.logged_in", "true"))
