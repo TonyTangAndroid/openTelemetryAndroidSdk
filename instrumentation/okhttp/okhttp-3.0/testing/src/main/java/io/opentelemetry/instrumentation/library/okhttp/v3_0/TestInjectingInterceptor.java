@@ -14,6 +14,12 @@ class TestInjectingInterceptor implements Interceptor {
     @NonNull
     @Override
    public Response intercept(@NonNull Chain chain) throws IOException {
+        Request requestWithBaggage = getRequest(chain);
+        return chain.proceed(requestWithBaggage);
+    }
+
+    @NonNull
+    private static Request getRequest(@NonNull Chain chain) {
         Request originalRequest = chain.request();
         Request.Builder requestBuilder = originalRequest.newBuilder();
         // Retrieve current context and baggage
@@ -23,6 +29,6 @@ class TestInjectingInterceptor implements Interceptor {
         currentBaggage.forEach((key, value) -> requestBuilder.addHeader(key, value.getValue()));
         requestBuilder.addHeader("fixed_header_key","fixed_header_value");
         Request requestWithBaggage = requestBuilder.build();
-        return chain.proceed(requestWithBaggage);
+        return requestWithBaggage;
     }
 }
