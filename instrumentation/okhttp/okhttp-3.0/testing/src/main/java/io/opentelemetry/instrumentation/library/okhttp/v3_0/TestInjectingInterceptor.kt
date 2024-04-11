@@ -1,23 +1,21 @@
-package io.opentelemetry.instrumentation.library.okhttp.v3_0;
+package io.opentelemetry.instrumentation.library.okhttp.v3_0
 
-import androidx.annotation.NonNull;
+import okhttp3.Interceptor
+import okhttp3.Interceptor.Chain
+import okhttp3.Request
+import okhttp3.Response
+import java.io.IOException
 
-import java.io.IOException;
-
-import okhttp3.Interceptor;
-import okhttp3.Request;
-import okhttp3.Response;
-
-class TestInjectingInterceptor implements Interceptor {
-    @NonNull
-    @Override
-    public Response intercept(@NonNull Chain chain) throws IOException {
-        Request requestWithFixedHeader = getRequest(chain);
-        return chain.proceed(requestWithFixedHeader);
+internal class TestInjectingInterceptor : Interceptor {
+    @Throws(IOException::class)
+    override fun intercept(chain: Chain): Response {
+        val requestWithFixedHeader = withFixedHeader(chain)
+        return chain.proceed(requestWithFixedHeader)
     }
 
-    @NonNull
-    private static Request getRequest(@NonNull Chain chain) {
-        return chain.request().newBuilder().addHeader("fixed_header_key", "fixed_header_value").build();
+    companion object {
+        private fun withFixedHeader(chain: Chain): Request {
+            return chain.request().newBuilder().addHeader("fixed_header_key", "fixed_header_value").build()
+        }
     }
 }
