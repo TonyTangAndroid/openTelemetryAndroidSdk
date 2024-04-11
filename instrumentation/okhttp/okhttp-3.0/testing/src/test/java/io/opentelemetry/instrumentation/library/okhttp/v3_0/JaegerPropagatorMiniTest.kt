@@ -8,7 +8,6 @@ import com.google.common.truth.Truth.assertThat
 import com.google.gson.annotations.SerializedName
 import io.opentelemetry.api.GlobalOpenTelemetry
 import io.opentelemetry.api.baggage.Baggage
-import io.opentelemetry.api.common.AttributeKey
 import io.opentelemetry.api.trace.Span
 import io.opentelemetry.api.trace.SpanBuilder
 import io.opentelemetry.api.trace.SpanKind
@@ -143,23 +142,21 @@ class JaegerPropagatorMiniTest {
 
     private fun assertLoggedIn( rootSpan: Span) {
         assertThat(spanExporter.finishedSpanItems).hasSize(4)
-        val recordedRequest = server.takeRequest()
+        val request = server.takeRequest()
         //affirm
-        assertThat(recordedRequest.headers).hasSize(7)
-        val list: List<Pair<String, String>> = recordedRequest.headers.filter { it.first.startsWith("uberctx") }
+        assertThat(request.headers).hasSize(7)
+        val list: List<Pair<String, String>> = request.headers.filter { it.first.startsWith("uberctx") }
         assertThat(list).containsExactlyElementsIn(
                 listOf(Pair("uberctx-user.logged_in", "true"))
         )
-        val uberTraceId = recordedRequest.headers["uber-trace-id"]
-        val spanTraceId = rootSpan.spanContext.traceId
         //example value 8d828d3c7c8663418b067492675bef12
-        assertThat(spanTraceId).isNotEmpty()
+        assertThat(rootSpan.spanContext.traceId).isNotEmpty()
         //example value  8d828d3c7c8663418b067492675bef12:dae708107c50eb0f:0:1
-        assertThat(uberTraceId).isNotEmpty()
-        assertThat(uberTraceId).startsWith(spanTraceId)
-        assertThat(uberTraceId).isNotEqualTo("8d828d3c7c8663418b067492675bef12")
+        assertThat(request.headers["uber-trace-id"]).isNotEmpty()
+        assertThat(request.headers["uber-trace-id"]).startsWith(rootSpan.spanContext.traceId)
+        assertThat(request.headers["uber-trace-id"]).isNotEqualTo("8d828d3c7c8663418b067492675bef12")
         val assembledTracedId = assembleRawTraceId(spanExporter.finishedSpanItems[2])
-        assertThat(uberTraceId).isEqualTo(assembledTracedId)
+        assertThat(request.headers["uber-trace-id"]).isEqualTo(assembledTracedId)
 
     }
 
