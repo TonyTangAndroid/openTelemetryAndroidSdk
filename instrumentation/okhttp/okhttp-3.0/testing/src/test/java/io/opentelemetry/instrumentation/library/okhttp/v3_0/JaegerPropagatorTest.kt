@@ -160,15 +160,7 @@ class JaegerPropagatorTest {
     }
 
 
-    /**
-     *Per the following assertion statement, here is what I take away:
-     *
-     * 0, All start from `GlobalOpenTelemetry.getTracer("TestTracer")`. It establishes a Tracer with unique trace id.
-     * 1, Once a tracer is active, it could trace different type actions. For here, we are using `OkHttp3Singletons.TRACING_INTERCEPTOR` to trace the network data out of box.
-     * 2, As we registered `JaegerPropagator`, hence we could get recordedRequest.headers["uber-trace-id"] out of box.
-     * 3, As we have `InMemorySpanExporter`, hence we could get the span data from `InMemorySpanExporter`.
-     * 4, Question so far: How could we associate the baggage with the tracing? By explicitly call ` Context.current()`?
-     */
+
     private fun assertLoggedIn(inMemorySpanExporter: InMemorySpanExporter, server: MockWebServer, rootSpan: Span) {
         val finishedSpanItems = inMemorySpanExporter.finishedSpanItems
         assertThat(finishedSpanItems).hasSize(4)
