@@ -5,7 +5,6 @@
 package io.opentelemetry.instrumentation.library.okhttp.v3_0
 
 import com.google.common.truth.Truth.assertThat
-import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
 import io.opentelemetry.api.GlobalOpenTelemetry
 import io.opentelemetry.api.baggage.Baggage
@@ -25,6 +24,8 @@ import io.opentelemetry.sdk.trace.data.SpanData
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -37,12 +38,13 @@ import java.io.IOException
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
 class JaegerPropagatorMiniTest {
+    private val server = MockWebServer()
+    private val restApi by lazy { RestApiUtil.restApi(server) }
+    private val inMemorySpanExporter: InMemorySpanExporter = InMemorySpanExporter.create()
 
-    @Test
-    @Throws(IOException::class, InterruptedException::class)
-    fun `case 1  when jaeger propagator is added it will trigger the request with uber header`() {
+    @Before
+    fun setup() {
         //arrange
-        val server = MockWebServer()
         server.start()
         server.enqueue(MockResponse().setResponseCode(200).setBody("""
             {"token":"1234"}
@@ -50,11 +52,22 @@ class JaegerPropagatorMiniTest {
         server.enqueue(MockResponse().setResponseCode(200).setBody("""
             {"status":"granted"}
         """.trimIndent()))
-        val restApi = RestApiUtil.restApi(server)
         GlobalOpenTelemetry.resetForTest()
 
-        //step 1: config the telemetrySdk
-        val inMemorySpanExporter = InMemorySpanExporter.create()
+    }
+
+    @After
+    fun teardown() {
+        //clean up
+        server.shutdown()
+        inMemorySpanExporter.reset()
+        GlobalOpenTelemetry.resetForTest()
+    }
+
+    @Test
+    @Throws(IOException::class, InterruptedException::class)
+    fun `case 1  when jaeger propagator is added it will trigger the request with uber header`() {
+        //arrange
         val jaegerPropagator: JaegerPropagator = JaegerPropagator.getInstance()
         val spanProcessor: SpanProcessor = SimpleSpanProcessor.create(inMemorySpanExporter)
         val sdkTracerProvider = SdkTracerProvider.builder()
@@ -200,7 +213,7 @@ class JaegerPropagatorMiniTest {
         return restApi.login(1).execute().body()!!
     }
 
-    private fun checkProfile(restApi: RestApi):UserStatus {
+    private fun checkProfile(restApi: RestApi): UserStatus {
         return restApi.profile("1234").execute().body()!!
     }
 
