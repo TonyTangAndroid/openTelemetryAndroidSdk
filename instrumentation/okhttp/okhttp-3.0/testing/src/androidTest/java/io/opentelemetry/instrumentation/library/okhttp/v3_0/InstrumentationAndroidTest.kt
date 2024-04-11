@@ -58,7 +58,7 @@ class InstrumentationAndroidTest {
 
     private fun execute(parentSpan: Span) {
         val client: OkHttpClient = OkHttpClient.Builder()
-                .addInterceptor(TestInjectingInterceptor())
+                .addInterceptor(TestInjectingIntercepting())
                 .addInterceptor {
                     response(parentSpan, it)
                 }

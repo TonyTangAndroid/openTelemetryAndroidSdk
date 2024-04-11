@@ -29,50 +29,20 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import okhttp3.internal.addHeaderLenient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import java.io.IOException
 
 
 @RunWith(RobolectricTestRunner::class)
+@Config(manifest = Config.NONE)
 class JaegerPropagatorTest {
 
-
-    @Ignore("State conflict with case 1")
-    @Test
-    @Throws(IOException::class, InterruptedException::class)
-    fun `case 0 when jaeger propagator is not added it will not trigger the request with uber header`() {
-
-        //arrange
-        val inMemorySpanExporter = InMemorySpanExporter.create()
-        GlobalOpenTelemetryUtil.setSdkWithAllDefault()
-        val server = MockWebServer()
-        server.start()
-        server.enqueue(MockResponse().setResponseCode(200))
-        val span = SpanUtil.startSpan()
-        //act
-        span.makeCurrent().use {
-            execute(span, server)
-        }
-        span.end()
-        //affirm
-        assertThat(inMemorySpanExporter.finishedSpanItems).hasSize(0)
-        //assert
-        val recordedRequest = server.takeRequest()
-        val uberTraceId = recordedRequest.headers["uber-trace-id"]
-        val spanTraceId = span.spanContext.traceId
-        //example value 8d828d3c7c8663418b067492675bef12
-        assertThat(spanTraceId).isNotEmpty()
-        assertThat(uberTraceId).isNull()
-
-        //clean up
-        server.shutdown()
-        inMemorySpanExporter.reset()
-    }
 
     @Test
     @Throws(IOException::class, InterruptedException::class)
@@ -103,6 +73,7 @@ class JaegerPropagatorTest {
         val spanBuilder: SpanBuilder = tracer.spanBuilder("A Test Span")
         val baggage = Baggage.builder()
                 .put("user.name", "jack")
+                .put("user.id", "123")
                 .build()
         val makeCurrent: Scope = Context.current().with(baggage).makeCurrent()
         makeCurrent.use {
@@ -135,12 +106,37 @@ class JaegerPropagatorTest {
      * 2, As we registered `JaegerPropagator`, hence we could get recordedRequest.headers["uber-trace-id"] out of box.
      * 3, As we have `InMemorySpanExporter`, hence we could get the span data from `InMemorySpanExporter`.
      * 4, Question so far: How could we associate the baggage with the tracing? By explicitly call ` Context.current()`?
+     *
+     *     user.id: 123
+     *     user.name: jack
+     *     fixed_header_key: fixed_header_value
+     *     Host: localhost:49792
+     *     Connection: Keep-Alive
+     *     Accept-Encoding: gzip
+     *     User-Agent: okhttp/4.12.0
+     *     uber-trace-id: 9ff9ce0bc81902bdec474411df38a506:c20f4deeb034d9b5:0:1
+     *     uberctx-abc: 456
+     *
+     *     user.id: 123
+     *     user.name: jack
+     *     fixed_header_key: fixed_header_value
+     *     Host: localhost:49826
+     *     Connection: Keep-Alive
+     *     Accept-Encoding: gzip
+     *     User-Agent: okhttp/4.12.0
+     *     uber-trace-id: 1d8de29f65d4bb60a65c344ab1470210:cb859dc8a9290eee:0:1
+     *     uberctx-user.id: 123
+     *     uberctx-user.name: jack
      */
     private fun assert(inMemorySpanExporter: InMemorySpanExporter, server: MockWebServer, rootSpan: Span) {
         val finishedSpanItems = inMemorySpanExporter.finishedSpanItems
         assertThat(finishedSpanItems).hasSize(2)
         val recordedRequest = server.takeRequest()
+        assertThat(recordedRequest.headers).hasSize(8)
         val uberTraceId = recordedRequest.headers["uber-trace-id"]
+        val uberBaggage = recordedRequest.headers["uberctx-abc"]
+        assertThat(uberBaggage).isEqualTo("456")
+
         val spanTraceId = rootSpan.spanContext.traceId
         //example value 8d828d3c7c8663418b067492675bef12
         assertThat(spanTraceId).isNotEmpty()
@@ -170,7 +166,8 @@ class JaegerPropagatorTest {
 
     private fun execute(parentSpan: Span, server: MockWebServer) {
         val client: OkHttpClient = OkHttpClient.Builder()
-                .addInterceptor(TestInjectingInterceptor())
+                .addInterceptor(TestInjectingIntercepting())
+//                .addInterceptor(OpenTelemetryBaggageInterceptorx())
                 //Pay attention that this is done without any context related to open telemetry.
                 .addNetworkInterceptor(OkHttp3Singletons.TRACING_INTERCEPTOR)
                 .addInterceptor {
