@@ -149,9 +149,9 @@ class JaegerPropagatorMiniTest {
         assertThat(list).containsExactlyElementsIn(
                 listOf(Pair("uberctx-user.logged_in", "true"))
         )
-        //example value 8d828d3c7c8663418b067492675bef12
+        //example value 0bd4506f1e369d3f2ee1e8a62db78125
         assertThat(rootSpan.spanContext.traceId).isNotEmpty()
-        //example value  8d828d3c7c8663418b067492675bef12:dae708107c50eb0f:0:1
+        //example value  0bd4506f1e369d3f2ee1e8a62db78125:7a12b3df317134b8:0:1
         assertThat(request.headers["uber-trace-id"]).isNotEmpty()
         assertThat(request.headers["uber-trace-id"]).startsWith(rootSpan.spanContext.traceId)
         assertThat(request.headers["uber-trace-id"]).isNotEqualTo("8d828d3c7c8663418b067492675bef12")
