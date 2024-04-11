@@ -63,11 +63,9 @@ class LoggedInFragment : Fragment() {
     }
 
     private fun checkOut(tvStatus: TextView) {
-        Single.defer { checkingOut() }
+        Single.fromCallable { checkingOut() }
+                .doOnSuccess { CheckInTracer(requireContext()).checkIn() }
                 .subscribeOn(Schedulers.computation())
-                .doOnSuccess {
-                    CheckInTracer(requireContext()).checkIn()
-                }
                 .observeOn(AndroidSchedulers.mainThread())
                 .autoDispose(AndroidLifecycleScopeProvider.from(this))
                 .subscribe(
@@ -81,8 +79,8 @@ class LoggedInFragment : Fragment() {
         return DemoApp.appScope(requireContext()).restApi().checkIn(TokenRepo(requireContext()).token())
     }
 
-    private fun checkingOut(): Single<UserStatus> {
-        return DemoApp.appScope(requireContext()).restApi().checkout()
+    private fun checkingOut(): UserStatus {
+        return DemoApp.appScope(requireContext()).restApi().checkout().execute().body()!!
     }
 
 

@@ -35,9 +35,7 @@ class CheckInTracer(private val context: android.content.Context) {
     }
 
     private fun checkInInternal(): UserStatus? {
-        val flag = TokenRepo(context).token()
-        val checkIn: Single<UserStatus> = DemoApp.appScope(context).restApi().checkIn(flag)
-        return checkIn.blockingGet()
+        return DemoApp.appScope(context).restApi().checkout().execute().body()
     }
 
 
