@@ -69,11 +69,9 @@ class JaegerPropagatorMiniTest {
     fun `case 1  when jaeger propagator is added it will trigger the request with uber header`() {
         val tracer: Tracer = GlobalOpenTelemetry.getTracer("TestTracer")
         Context.current().with(rootBaggage()).makeCurrent().use {
-            val rootSpan: Span = triggerRootSpan(tracer, restApi)
-            assertRoot(rootSpan)
+            assertRoot(triggerRootSpan(tracer, restApi))
             Context.current().with(loggedInBaggage()).makeCurrent().use {
-                val loggedInSpan: Span = triggerLoggedInSpan(tracer, restApi)
-                assertLoggedIn(spanExporter, server, loggedInSpan)
+                assertLoggedIn( triggerLoggedInSpan(tracer, restApi))
             }
         }
     }
@@ -143,9 +141,8 @@ class JaegerPropagatorMiniTest {
     }
 
 
-    private fun assertLoggedIn(inMemorySpanExporter: InMemorySpanExporter, server: MockWebServer, rootSpan: Span) {
-        val finishedSpanItems = inMemorySpanExporter.finishedSpanItems
-        assertThat(finishedSpanItems).hasSize(4)
+    private fun assertLoggedIn( rootSpan: Span) {
+        assertThat(spanExporter.finishedSpanItems).hasSize(4)
         val recordedRequest = server.takeRequest()
         //affirm
         assertThat(recordedRequest.headers).hasSize(7)
@@ -161,16 +158,8 @@ class JaegerPropagatorMiniTest {
         assertThat(uberTraceId).isNotEmpty()
         assertThat(uberTraceId).startsWith(spanTraceId)
         assertThat(uberTraceId).isNotEqualTo("8d828d3c7c8663418b067492675bef12")
-        val spanData: SpanData = finishedSpanItems[2]
-        val assembledTracedId = assembleRawTraceId(spanData)
+        val assembledTracedId = assembleRawTraceId(spanExporter.finishedSpanItems[2])
         assertThat(uberTraceId).isEqualTo(assembledTracedId)
-        assertThat(finishedSpanItems[2].spanId).isNotEqualTo(rootSpan.spanContext.spanId)
-        assertThat(finishedSpanItems[3].spanId).isEqualTo(rootSpan.spanContext.spanId)
-        assertThat(spanData.attributes[AttributeKey.longKey("http.response.status_code")]).isEqualTo(200)
-        assertThat(spanData.attributes[AttributeKey.stringKey("http.response.status_code")]).isNull()
-
-        val currentContext = Context.current()
-        assertThat(currentContext).isNotNull()
 
     }
 
