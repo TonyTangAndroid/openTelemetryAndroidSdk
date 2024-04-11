@@ -8,7 +8,8 @@ import network.UserStatus
 
 class CheckInTracer(private val context: android.content.Context) {
     fun checkIn(): UserStatus? {
-        Context.current().with(rootBaggage()).makeCurrent().use {
+        val scope = Context.current().with(rootBaggage()).makeCurrent()
+        scope.use {
             return checkInInternal()
         }
     }
