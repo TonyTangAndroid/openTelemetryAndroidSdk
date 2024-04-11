@@ -46,9 +46,13 @@ class JaegerPropagatorTest {
         //arrange
         val server = MockWebServer()
         server.start()
-        server.enqueue(MockResponse().setResponseCode(200))
+        server.enqueue(MockResponse().setResponseCode(200).setBody("""
+            {"token":"1234"}
+        """.trimIndent()))
+        server.enqueue(MockResponse().setResponseCode(200).setBody("""
+            {"status":"4321"}
+        """.trimIndent()))
         GlobalOpenTelemetry.resetForTest()
-
 
         //step 1: config the telemetrySdk
         val inMemorySpanExporter = InMemorySpanExporter.create()
