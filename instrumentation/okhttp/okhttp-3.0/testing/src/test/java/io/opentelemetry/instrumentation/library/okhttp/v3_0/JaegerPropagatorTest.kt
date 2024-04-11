@@ -14,7 +14,6 @@ import io.opentelemetry.api.trace.SpanContext
 import io.opentelemetry.api.trace.SpanKind
 import io.opentelemetry.api.trace.Tracer
 import io.opentelemetry.context.Context
-import io.opentelemetry.context.Scope
 import io.opentelemetry.context.propagation.ContextPropagators
 import io.opentelemetry.extension.trace.propagation.JaegerPropagator
 import io.opentelemetry.instrumentation.library.okhttp.v3_0.internal.OkHttp3Singletons
@@ -70,16 +69,12 @@ class JaegerPropagatorTest {
 
         //step 2: start trace
         val tracer: Tracer = GlobalOpenTelemetry.getTracer("TestTracer")
-        val spanBuilder: SpanBuilder = tracer.spanBuilder("A Test Span")
         val baggage = Baggage.builder()
                 .put("user.name", "jack")
                 .put("user.id", "321")
                 .build()
-        val makeCurrent: Scope = Context.current().with(baggage).makeCurrent()
-        makeCurrent.use {
-            spanBuilder.setAttribute("root_key_1", "root_key_2")
-            spanBuilder.setSpanKind(SpanKind.CLIENT)
-            val rootSpan: Span = spanBuilder.startSpan()
+        Context.current().with(baggage).makeCurrent().use {
+            val rootSpan: Span = rootSpan(tracer)
             rootSpan.addEvent("started_event")
             //act
             rootSpan.makeCurrent().use {
@@ -88,6 +83,7 @@ class JaegerPropagatorTest {
             rootSpan.addEvent("ended_event")
             rootSpan.end()
 
+
             //assert
             assert(inMemorySpanExporter, server, rootSpan)
         }
@@ -95,6 +91,14 @@ class JaegerPropagatorTest {
         //clean up
         server.shutdown()
         inMemorySpanExporter.reset()
+    }
+
+    private fun rootSpan(tracer: Tracer): Span {
+        val spanBuilder: SpanBuilder = tracer.spanBuilder("A Test Span")
+        spanBuilder.setAttribute("root_key_1", "root_key_2")
+        spanBuilder.setSpanKind(SpanKind.CLIENT)
+        val rootSpan: Span = spanBuilder.startSpan()
+        return rootSpan
     }
 
     /**
