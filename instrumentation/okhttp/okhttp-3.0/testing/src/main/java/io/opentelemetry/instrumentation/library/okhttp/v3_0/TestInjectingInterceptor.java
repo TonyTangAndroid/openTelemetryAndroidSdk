@@ -10,7 +10,7 @@ import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 
-class TestInjectingIntercepting implements Interceptor {
+class TestInjectingInterceptor implements Interceptor {
     @NonNull
     @Override
    public Response intercept(@NonNull Chain chain) throws IOException {
