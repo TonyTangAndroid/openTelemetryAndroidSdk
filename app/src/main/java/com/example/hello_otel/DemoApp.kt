@@ -7,7 +7,6 @@ import com.google.gson.annotations.SerializedName
 import io.opentelemetry.android.OpenTelemetryRum
 import io.opentelemetry.api.GlobalOpenTelemetry
 import io.opentelemetry.api.trace.Span
-import io.opentelemetry.context.Context
 import io.opentelemetry.sdk.testing.exporter.InMemorySpanExporter
 import io.opentelemetry.sdk.trace.data.SpanData
 import io.reactivex.Single
@@ -23,12 +22,11 @@ import java.util.concurrent.TimeUnit
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 interface RestApi {
-    //retrofit
     @GET("auth")
-    fun login(context: Context, @Header("x-bypass")  flag1: Int): Single<UserToken>
+    fun login(@Header("x-bypass") flag: Int): Single<UserToken>
 
     @GET("profile")
-    fun profile(context: Context,@Header("token") flag: String): Single<JsonElement>
+    fun profile(@Header("token") flag: String): Single<JsonElement>
 
 }
 

@@ -15,8 +15,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider.*
 import com.uber.autodispose.autoDispose
-import io.opentelemetry.context.Context
-import io.opentelemetry.context.ContextKey
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
@@ -47,22 +45,16 @@ class MainActivity : AppCompatActivity() {
             Timber.tag(DemoApp.LOG_TAG).i("Ended trace_id:$traceId,span_id:$spanId")
         }
         fab.setOnClickListener { view ->
-            firstClickToLogin(view)
+            login(view)
         }
     }
 
-    private fun firstClickToLogin(view: View) {
-        //add context for baggage
-        val ctx: io.opentelemetry.context.Context = io.opentelemetry.context.Context.current().with(ContextKey.named("u_session_id"), "12345")
-//        newContext.makeCurrent()
-        //How xx
-
-        showLoginError(ctx, view)
+    private fun login(view: View) {
+        showLoginError(view)
     }
 
-    private fun showLoginError(ctx: Context, view: View) {
-        auth(ctx,0)
-
+    private fun showLoginError(view: View) {
+        auth(0)
                 .observeOn(AndroidSchedulers.mainThread())
                 .autoDispose(from(this))
                 .subscribe(
@@ -72,7 +64,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun triggerLoginSuccess() {
-        auth(ctx, 1).observeOn(AndroidSchedulers.mainThread())
+        auth(1).observeOn(AndroidSchedulers.mainThread())
                 .autoDispose(from(this))
                 .subscribe(
                         Consumer {
@@ -86,10 +78,10 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, "fetched user token:$it", Toast.LENGTH_SHORT).show()
     }
 
-    private fun auth(ctx: Context, flag: Int): Single<UserToken> {
+    private fun auth(flag: Int): Single<UserToken> {
         return Single.defer{
             DemoApp.appScope(application).restApi()
-                    .login(ctx,flag)
+                    .login(flag)
         }
                 .subscribeOn(Schedulers.io())
     }
