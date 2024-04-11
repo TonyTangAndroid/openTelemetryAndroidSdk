@@ -79,9 +79,8 @@ class JaegerPropagatorTest {
         makeCurrent.use {
             spanBuilder.setAttribute("root_key_1", "root_key_2")
             spanBuilder.setSpanKind(SpanKind.CLIENT)
-            val rootSpan = spanBuilder.startSpan()
+            val rootSpan: Span = spanBuilder.startSpan()
             rootSpan.addEvent("started_event")
-
             //act
             rootSpan.makeCurrent().use {
                 execute(rootSpan, server)
