@@ -6,7 +6,7 @@ import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 
-internal class TestInjectingInterceptor : Interceptor {
+internal class FixedTestInterceptor : Interceptor {
     @Throws(IOException::class)
     override fun intercept(chain: Chain): Response {
         val requestWithFixedHeader = withFixedHeader(chain)
