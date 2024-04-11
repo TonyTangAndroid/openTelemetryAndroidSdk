@@ -231,10 +231,10 @@ class JaegerPropagatorMiniTest {
 
 interface RestApi{
     @GET("auth")
-    fun login(@Header("x-bypass") flag: Int): Single<UserToken>
+    fun login(@Header("x-bypass") flag: Int): retrofit2.Call<UserToken>
 
     @GET("profile")
-    fun profile(@Header("token") flag: String): Single<JsonElement>
+    fun profile(@Header("token") flag: String): retrofit2.Call<JsonElement>
 }
 
 data class UserToken(@SerializedName("token") val token: String)
