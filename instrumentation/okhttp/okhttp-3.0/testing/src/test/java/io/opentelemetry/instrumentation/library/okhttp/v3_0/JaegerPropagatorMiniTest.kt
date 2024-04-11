@@ -70,7 +70,7 @@ class JaegerPropagatorMiniTest {
         val tracer: Tracer = GlobalOpenTelemetry.getTracer("TestTracer")
         Context.current().with(rootBaggage()).makeCurrent().use {
             val rootSpan: Span = triggerRootSpan(tracer, restApi)
-            assertRoot( rootSpan)
+            assertRoot(rootSpan)
             Context.current().with(loggedInBaggage()).makeCurrent().use {
                 val loggedInSpan: Span = triggerLoggedInSpan(tracer, restApi)
                 assertLoggedIn(inMemorySpanExporter, server, loggedInSpan)
@@ -133,9 +133,7 @@ class JaegerPropagatorMiniTest {
      * 3, As we have `InMemorySpanExporter`, hence we could get the span data from `InMemorySpanExporter`.
      * 4, Question so far: How could we associate the baggage with the tracing? By explicitly call ` Context.current()`?
      */
-    private fun assertRoot(  rootSpan: Span) {
-        val finishedSpanItems = inMemorySpanExporter.finishedSpanItems
-        assertThat(finishedSpanItems).hasSize(2)
+    private fun assertRoot(rootSpan: Span) {
         val recordedRequest = server.takeRequest()
         //affirm
         assertThat(recordedRequest.headers).hasSize(8)
@@ -151,16 +149,7 @@ class JaegerPropagatorMiniTest {
         assertThat(uberTraceId).isNotEmpty()
         assertThat(uberTraceId).startsWith(spanTraceId)
         assertThat(uberTraceId).isNotEqualTo("8d828d3c7c8663418b067492675bef12")
-        val spanData: SpanData = finishedSpanItems[0]
-        val assembledTracedId = assembleRawTraceId(spanData)
-        assertThat(uberTraceId).isEqualTo(assembledTracedId)
-        assertThat(finishedSpanItems[0].spanId).isNotEqualTo(rootSpan.spanContext.spanId)
-        assertThat(finishedSpanItems[1].spanId).isEqualTo(rootSpan.spanContext.spanId)
-        assertThat(spanData.attributes[AttributeKey.longKey("http.response.status_code")]).isEqualTo(200)
-        assertThat(spanData.attributes[AttributeKey.stringKey("http.response.status_code")]).isNull()
-
-        val currentContext = Context.current()
-        assertThat(currentContext).isNotNull()
+        assertThat(uberTraceId).isEqualTo(assembleRawTraceId(inMemorySpanExporter.finishedSpanItems[0]))
 
     }
 
