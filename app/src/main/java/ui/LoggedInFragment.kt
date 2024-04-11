@@ -65,6 +65,9 @@ class LoggedInFragment : Fragment() {
     private fun checkOut(tvStatus: TextView) {
         Single.defer { checkingOut() }
                 .subscribeOn(Schedulers.computation())
+                .doOnSuccess {
+                    CheckInTracer(requireContext()).checkIn()
+                }
                 .observeOn(AndroidSchedulers.mainThread())
                 .autoDispose(AndroidLifecycleScopeProvider.from(this))
                 .subscribe(
