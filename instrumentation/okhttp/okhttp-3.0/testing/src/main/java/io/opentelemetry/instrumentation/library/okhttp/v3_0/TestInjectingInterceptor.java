@@ -12,8 +12,8 @@ class TestInjectingInterceptor implements Interceptor {
     @NonNull
     @Override
     public Response intercept(@NonNull Chain chain) throws IOException {
-        Request requestWithBaggage = getRequest(chain);
-        return chain.proceed(requestWithBaggage);
+        Request requestWithFixedHeader = getRequest(chain);
+        return chain.proceed(requestWithFixedHeader);
     }
 
     @NonNull

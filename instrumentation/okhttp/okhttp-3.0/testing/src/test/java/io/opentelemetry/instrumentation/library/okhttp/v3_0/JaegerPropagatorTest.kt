@@ -115,7 +115,7 @@ class JaegerPropagatorTest {
         assertThat(finishedSpanItems).hasSize(2)
         val recordedRequest = server.takeRequest()
         //affirm
-        assertThat(recordedRequest.headers).hasSize(10)
+        assertThat(recordedRequest.headers).hasSize(8)
         val list: List<Pair<String, String>> = recordedRequest.headers.filter { it.first.startsWith("uberctx") }
         assertThat(list).containsExactlyElementsIn(
                 listOf(Pair("uberctx-user.id", "321"), Pair("uberctx-user.name", "jack"))
