@@ -74,14 +74,7 @@ class JaegerPropagatorTest {
                 .put("user.id", "321")
                 .build()
         Context.current().with(baggage).makeCurrent().use {
-            val rootSpan: Span = rootSpan(tracer)
-            rootSpan.addEvent("started_event")
-            //act
-            rootSpan.makeCurrent().use {
-                execute(rootSpan, server)
-            }
-            rootSpan.addEvent("ended_event")
-            rootSpan.end()
+            val rootSpan: Span = span(tracer, server)
 
 
             //assert
@@ -91,6 +84,18 @@ class JaegerPropagatorTest {
         //clean up
         server.shutdown()
         inMemorySpanExporter.reset()
+    }
+
+    private fun span(tracer: Tracer, server: MockWebServer): Span {
+        val rootSpan: Span = rootSpan(tracer)
+        rootSpan.addEvent("started_event")
+        //act
+        rootSpan.makeCurrent().use {
+            execute(rootSpan, server)
+        }
+        rootSpan.addEvent("ended_event")
+        rootSpan.end()
+        return rootSpan
     }
 
     private fun rootSpan(tracer: Tracer): Span {
