@@ -70,7 +70,7 @@ class JaegerPropagatorMiniTest {
         val tracer: Tracer = GlobalOpenTelemetry.getTracer("TestTracer")
         Context.current().with(rootBaggage()).makeCurrent().use {
             val rootSpan: Span = triggerRootSpan(tracer, restApi)
-            assertRoot(inMemorySpanExporter, server, rootSpan)
+            assertRoot( rootSpan)
             Context.current().with(loggedInBaggage()).makeCurrent().use {
                 val loggedInSpan: Span = triggerLoggedInSpan(tracer, restApi)
                 assertLoggedIn(inMemorySpanExporter, server, loggedInSpan)
@@ -133,7 +133,7 @@ class JaegerPropagatorMiniTest {
      * 3, As we have `InMemorySpanExporter`, hence we could get the span data from `InMemorySpanExporter`.
      * 4, Question so far: How could we associate the baggage with the tracing? By explicitly call ` Context.current()`?
      */
-    private fun assertRoot(inMemorySpanExporter: InMemorySpanExporter, server: MockWebServer, rootSpan: Span) {
+    private fun assertRoot(  rootSpan: Span) {
         val finishedSpanItems = inMemorySpanExporter.finishedSpanItems
         assertThat(finishedSpanItems).hasSize(2)
         val recordedRequest = server.takeRequest()
