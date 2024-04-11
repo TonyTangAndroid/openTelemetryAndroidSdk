@@ -141,12 +141,11 @@ class JaegerPropagatorMiniTest {
         assertThat(list).containsExactlyElementsIn(
                 listOf(Pair("uberctx-user.id", "321"), Pair("uberctx-user.name", "jack"))
         )
-        val spanTraceId = rootSpan.spanContext.traceId
         //example value 8d828d3c7c8663418b067492675bef12
-        assertThat(spanTraceId).isNotEmpty()
+        assertThat(rootSpan.spanContext.traceId).isNotEmpty()
         //example value  8d828d3c7c8663418b067492675bef12:dae708107c50eb0f:0:1
         assertThat(request.headers["uber-trace-id"]).isNotEmpty()
-        assertThat(request.headers["uber-trace-id"]).startsWith(spanTraceId)
+        assertThat(request.headers["uber-trace-id"]).startsWith(rootSpan.spanContext.traceId)
         assertThat(request.headers["uber-trace-id"]).isNotEqualTo("8d828d3c7c8663418b067492675bef12")
         assertThat(request.headers["uber-trace-id"]).isEqualTo(assembleRawTraceId(spanExporter.finishedSpanItems[0]))
 
