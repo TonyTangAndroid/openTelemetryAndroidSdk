@@ -19,7 +19,6 @@ import io.opentelemetry.extension.trace.propagation.JaegerPropagator
 import io.opentelemetry.sdk.OpenTelemetrySdk
 import io.opentelemetry.sdk.testing.exporter.InMemorySpanExporter
 import io.opentelemetry.sdk.trace.SdkTracerProvider
-import io.opentelemetry.sdk.trace.SpanProcessor
 import io.opentelemetry.sdk.trace.data.SpanData
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor
 import okhttp3.mockwebserver.MockResponse
@@ -53,6 +52,7 @@ class JaegerPropagatorMiniTest {
             {"status":"granted"}
         """.trimIndent()))
         GlobalOpenTelemetry.resetForTest()
+        configOpenTelemetry()
 
     }
 
@@ -67,20 +67,6 @@ class JaegerPropagatorMiniTest {
     @Test
     @Throws(IOException::class, InterruptedException::class)
     fun `case 1  when jaeger propagator is added it will trigger the request with uber header`() {
-        //arrange
-        val jaegerPropagator: JaegerPropagator = JaegerPropagator.getInstance()
-        val spanProcessor: SpanProcessor = SimpleSpanProcessor.create(inMemorySpanExporter)
-        val sdkTracerProvider = SdkTracerProvider.builder()
-                .addSpanProcessor(spanProcessor)
-                .build()
-        //Make `uber-trace-id` attached.
-        val contextPropagators = ContextPropagators.create(jaegerPropagator)
-        val telemetrySdk = OpenTelemetrySdk.builder().setTracerProvider(sdkTracerProvider)
-                .setPropagators(contextPropagators)
-                .build()
-        GlobalOpenTelemetry.set(telemetrySdk)
-
-        //step 2: start trace
         val tracer: Tracer = GlobalOpenTelemetry.getTracer("TestTracer")
         Context.current().with(rootBaggage()).makeCurrent().use {
             val rootSpan: Span = triggerRootSpan(tracer, restApi)
@@ -90,10 +76,18 @@ class JaegerPropagatorMiniTest {
                 assertLoggedIn(inMemorySpanExporter, server, loggedInSpan)
             }
         }
+    }
 
-        //clean up
-        server.shutdown()
-        inMemorySpanExporter.reset()
+    private fun configOpenTelemetry() {
+        //Make `uber-trace-id` attached.
+        val jaegerPropagator: JaegerPropagator = JaegerPropagator.getInstance()
+        val contextPropagators = ContextPropagators.create(jaegerPropagator)
+        val spanProcessor = SimpleSpanProcessor.create(inMemorySpanExporter)
+        val tracer = SdkTracerProvider.builder().addSpanProcessor(spanProcessor).build()
+        val telemetrySdk = OpenTelemetrySdk.builder().setTracerProvider(tracer)
+                .setPropagators(contextPropagators)
+                .build()
+        GlobalOpenTelemetry.set(telemetrySdk)
     }
 
 
