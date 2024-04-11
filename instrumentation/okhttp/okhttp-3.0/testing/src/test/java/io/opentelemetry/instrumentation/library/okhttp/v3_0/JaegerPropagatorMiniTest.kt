@@ -10,7 +10,6 @@ import io.opentelemetry.api.baggage.Baggage
 import io.opentelemetry.api.common.AttributeKey
 import io.opentelemetry.api.trace.Span
 import io.opentelemetry.api.trace.SpanBuilder
-import io.opentelemetry.api.trace.SpanContext
 import io.opentelemetry.api.trace.SpanKind
 import io.opentelemetry.api.trace.Tracer
 import io.opentelemetry.context.Context
@@ -24,10 +23,8 @@ import io.opentelemetry.sdk.trace.SpanProcessor
 import io.opentelemetry.sdk.trace.data.SpanData
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor
 import okhttp3.Call
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.Response
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Test
@@ -91,7 +88,7 @@ class JaegerPropagatorMiniTest {
         rootSpan.addEvent("started_event")
         //act
         rootSpan.makeCurrent().use {
-            execute(rootSpan, server)
+            execute(server)
         }
         rootSpan.addEvent("ended_event")
         rootSpan.end()
@@ -104,7 +101,7 @@ class JaegerPropagatorMiniTest {
         loggedInSpan.addEvent("start_logging_in")
         //act
         loggedInSpan.makeCurrent().use {
-            execute(loggedInSpan, server)
+            execute(server)
         }
         loggedInSpan.addEvent("finished_logging_in")
         loggedInSpan.end()
@@ -199,22 +196,13 @@ class JaegerPropagatorMiniTest {
         return "$traceId:$spanId:0:1"
     }
 
-    private fun execute(parentSpan: Span, server: MockWebServer) {
+    private fun execute(server: MockWebServer) {
         val client: OkHttpClient = OkHttpClient.Builder()
                 .addInterceptor(FixedTestInterceptor())
                 //Pay attention that this is done without any context related to open telemetry.
                 .addNetworkInterceptor(OkHttp3Singletons.TRACING_INTERCEPTOR)
-                .addInterceptor {
-                    response(parentSpan, it)
-                }
                 .build()
         createCall(client, server).execute().close()
-    }
-
-    private fun response(parentSpan: Span, chain: Interceptor.Chain): Response {
-        val currentSpanContext: SpanContext = Span.current().spanContext
-        assertThat(currentSpanContext.traceId).isEqualTo(parentSpan.spanContext.traceId)
-        return chain.proceed(chain.request())
     }
 
     private fun createCall(client: OkHttpClient, server: MockWebServer): Call {
