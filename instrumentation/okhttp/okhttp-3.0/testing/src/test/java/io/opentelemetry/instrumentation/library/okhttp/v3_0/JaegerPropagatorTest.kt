@@ -33,10 +33,12 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import java.io.IOException
 
 
 @RunWith(RobolectricTestRunner::class)
+@Config(manifest=Config.NONE)
 class JaegerPropagatorTest {
 
     @Test
@@ -71,9 +73,9 @@ class JaegerPropagatorTest {
         val tracer: Tracer = GlobalOpenTelemetry.getTracer("TestTracer")
         Context.current().with(rootBaggage()).makeCurrent().use {
             val rootSpan: Span = triggerRootSpan(tracer, server)
-            assert(inMemorySpanExporter, server, rootSpan)
+            assertRoot(inMemorySpanExporter, server, rootSpan)
             Context.current().with(loggedInBaggage()).makeCurrent().use {
-//                assert(inMemorySpanExporter, server, rootSpan)
+//                assertLoggedIn(inMemorySpanExporter, server, rootSpan)
             }
         }
 
@@ -103,6 +105,7 @@ class JaegerPropagatorTest {
         return rootSpan
     }
 
+
     /**
      *Per the following assertion statement, here is what I take away:
      *
@@ -112,7 +115,48 @@ class JaegerPropagatorTest {
      * 3, As we have `InMemorySpanExporter`, hence we could get the span data from `InMemorySpanExporter`.
      * 4, Question so far: How could we associate the baggage with the tracing? By explicitly call ` Context.current()`?
      */
-    private fun assert(inMemorySpanExporter: InMemorySpanExporter, server: MockWebServer, rootSpan: Span) {
+    private fun assertRoot(inMemorySpanExporter: InMemorySpanExporter, server: MockWebServer, rootSpan: Span) {
+        val finishedSpanItems = inMemorySpanExporter.finishedSpanItems
+        assertThat(finishedSpanItems).hasSize(2)
+        val recordedRequest = server.takeRequest()
+        //affirm
+        assertThat(recordedRequest.headers).hasSize(8)
+        val list: List<Pair<String, String>> = recordedRequest.headers.filter { it.first.startsWith("uberctx") }
+        assertThat(list).containsExactlyElementsIn(
+                listOf(Pair("uberctx-user.id", "321"), Pair("uberctx-user.name", "jack"))
+        )
+        val uberTraceId = recordedRequest.headers["uber-trace-id"]
+        val spanTraceId = rootSpan.spanContext.traceId
+        //example value 8d828d3c7c8663418b067492675bef12
+        assertThat(spanTraceId).isNotEmpty()
+        //example value  8d828d3c7c8663418b067492675bef12:dae708107c50eb0f:0:1
+        assertThat(uberTraceId).isNotEmpty()
+        assertThat(uberTraceId).startsWith(spanTraceId)
+        assertThat(uberTraceId).isNotEqualTo("8d828d3c7c8663418b067492675bef12")
+        val spanData: SpanData = finishedSpanItems[0]
+        val assembledTracedId = assembleRawTraceId(spanData)
+        assertThat(uberTraceId).isEqualTo(assembledTracedId)
+        assertThat(finishedSpanItems[0].spanId).isNotEqualTo(rootSpan.spanContext.spanId)
+        assertThat(finishedSpanItems[1].spanId).isEqualTo(rootSpan.spanContext.spanId)
+        assertThat(spanData.attributes[AttributeKey.longKey("http.response.status_code")]).isEqualTo(200)
+        assertThat(spanData.attributes[AttributeKey.stringKey("http.response.status_code")]).isNull()
+
+        val currentContext = Context.current()
+        assertThat(currentContext).isNotNull()
+
+    }
+
+
+    /**
+     *Per the following assertion statement, here is what I take away:
+     *
+     * 0, All start from `GlobalOpenTelemetry.getTracer("TestTracer")`. It establishes a Tracer with unique trace id.
+     * 1, Once a tracer is active, it could trace different type actions. For here, we are using `OkHttp3Singletons.TRACING_INTERCEPTOR` to trace the network data out of box.
+     * 2, As we registered `JaegerPropagator`, hence we could get recordedRequest.headers["uber-trace-id"] out of box.
+     * 3, As we have `InMemorySpanExporter`, hence we could get the span data from `InMemorySpanExporter`.
+     * 4, Question so far: How could we associate the baggage with the tracing? By explicitly call ` Context.current()`?
+     */
+    private fun assertLoggedIn(inMemorySpanExporter: InMemorySpanExporter, server: MockWebServer, rootSpan: Span) {
         val finishedSpanItems = inMemorySpanExporter.finishedSpanItems
         assertThat(finishedSpanItems).hasSize(2)
         val recordedRequest = server.takeRequest()
