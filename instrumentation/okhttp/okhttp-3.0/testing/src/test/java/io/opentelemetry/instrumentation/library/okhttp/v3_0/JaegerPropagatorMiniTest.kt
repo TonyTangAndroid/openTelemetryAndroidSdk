@@ -140,7 +140,7 @@ class JaegerPropagatorMiniTest {
     }
 
 
-    private fun assertLoggedIn(rootSpan: Span) {
+    private fun assertLoggedIn(loggedInSpan: Span) {
         assertThat(spanExporter.finishedSpanItems).hasSize(4)
         val request = server.takeRequest()
         //affirm
@@ -150,10 +150,10 @@ class JaegerPropagatorMiniTest {
                 listOf(Pair("uberctx-user.logged_in", "true"))
         )
         //example value 0bd4506f1e369d3f2ee1e8a62db78125
-        assertThat(rootSpan.spanContext.traceId).isNotEmpty()
+        assertThat(loggedInSpan.spanContext.traceId).isNotEmpty()
         //example value  0bd4506f1e369d3f2ee1e8a62db78125:7a12b3df317134b8:0:1
         assertThat(request.headers["uber-trace-id"]).isNotEmpty()
-        assertThat(request.headers["uber-trace-id"]).startsWith(rootSpan.spanContext.traceId)
+        assertThat(request.headers["uber-trace-id"]).startsWith(loggedInSpan.spanContext.traceId)
         assertThat(request.headers["uber-trace-id"]).isNotEqualTo("8d828d3c7c8663418b067492675bef12")
         val assembledTracedId = assembleRawTraceId(spanExporter.finishedSpanItems[2])
         assertThat(request.headers["uber-trace-id"]).isEqualTo(assembledTracedId)
