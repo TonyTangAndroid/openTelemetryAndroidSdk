@@ -70,7 +70,7 @@ class JaegerPropagatorMiniTest {
         Context.current().with(rootBaggage()).makeCurrent().use {
             assertRoot(triggerRootSpan(tracer, restApi))
             Context.current().with(loggedInBaggage()).makeCurrent().use {
-                assertLoggedIn( triggerLoggedInSpan(tracer, restApi))
+                assertLoggedIn(triggerLoggedInSpan(tracer, restApi))
             }
         }
     }
@@ -140,7 +140,7 @@ class JaegerPropagatorMiniTest {
     }
 
 
-    private fun assertLoggedIn( rootSpan: Span) {
+    private fun assertLoggedIn(rootSpan: Span) {
         assertThat(spanExporter.finishedSpanItems).hasSize(4)
         val request = server.takeRequest()
         //affirm
