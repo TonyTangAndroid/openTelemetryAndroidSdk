@@ -71,8 +71,10 @@ class JaegerPropagatorTest {
         val tracer: Tracer = GlobalOpenTelemetry.getTracer("TestTracer")
         Context.current().with(rootBaggage()).makeCurrent().use {
             val rootSpan: Span = triggerRootSpan(tracer, server)
-            //assert
             assert(inMemorySpanExporter, server, rootSpan)
+            Context.current().with(loggedInBaggage()).makeCurrent().use {
+//                assert(inMemorySpanExporter, server, rootSpan)
+            }
         }
 
         //clean up
@@ -176,6 +178,11 @@ class JaegerPropagatorTest {
         return Baggage.builder()
                 .put("user.name", "jack")
                 .put("user.id", "321")
+                .build()
+    }
+    private fun loggedInBaggage(): Baggage {
+        return Baggage.builder()
+                .put("user.logged_in", "true")
                 .build()
     }
 }
