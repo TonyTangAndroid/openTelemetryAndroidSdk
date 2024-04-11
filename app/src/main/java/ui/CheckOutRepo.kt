@@ -9,15 +9,14 @@ import network.UserStatus
 
 class CheckOutRepo(private val context: android.content.Context) {
 
-
     fun checkingOut(): Single<UserStatus> {
         return Single.fromCallable { checkOutInternal() }
     }
 
 
-    fun checkOutInternal(): UserStatus? {
+    private fun checkOutInternal(): UserStatus {
         Context.current().with(rootBaggage()).makeCurrent().use {
-            return DemoApp.appScope(context).restApi().checkout().execute().body()
+            return DemoApp.appScope(context).restApi().checkout().execute().body()!!
         }
     }
 
