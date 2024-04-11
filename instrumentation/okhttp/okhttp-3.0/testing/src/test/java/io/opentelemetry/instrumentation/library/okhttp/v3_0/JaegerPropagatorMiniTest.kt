@@ -30,7 +30,6 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -40,8 +39,7 @@ import java.io.IOException
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest=Config.NONE)
-@Ignore("Conflicted with JaegerPropagatorMiniTest")
-class JaegerPropagatorTest {
+class JaegerPropagatorMiniTest {
 
     @Test
     @Throws(IOException::class, InterruptedException::class)
