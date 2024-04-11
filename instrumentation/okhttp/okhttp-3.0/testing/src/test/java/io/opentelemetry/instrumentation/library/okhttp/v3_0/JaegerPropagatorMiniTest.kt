@@ -5,6 +5,8 @@
 package io.opentelemetry.instrumentation.library.okhttp.v3_0
 
 import com.google.common.truth.Truth.assertThat
+import com.google.gson.JsonElement
+import com.google.gson.annotations.SerializedName
 import io.opentelemetry.api.GlobalOpenTelemetry
 import io.opentelemetry.api.baggage.Baggage
 import io.opentelemetry.api.common.AttributeKey
@@ -22,6 +24,7 @@ import io.opentelemetry.sdk.trace.SdkTracerProvider
 import io.opentelemetry.sdk.trace.SpanProcessor
 import io.opentelemetry.sdk.trace.data.SpanData
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor
+import io.reactivex.Single
 import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -31,6 +34,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import retrofit2.http.GET
+import retrofit2.http.Header
 import java.io.IOException
 
 
@@ -223,3 +228,13 @@ class JaegerPropagatorMiniTest {
                 .build()
     }
 }
+
+interface RestApi{
+    @GET("auth")
+    fun login(@Header("x-bypass") flag: Int): Single<UserToken>
+
+    @GET("profile")
+    fun profile(@Header("token") flag: String): Single<JsonElement>
+}
+
+data class UserToken(@SerializedName("token") val token: String)
