@@ -17,17 +17,12 @@ import io.opentelemetry.api.trace.Tracer
 import io.opentelemetry.context.Context
 import io.opentelemetry.context.propagation.ContextPropagators
 import io.opentelemetry.extension.trace.propagation.JaegerPropagator
-import io.opentelemetry.instrumentation.library.okhttp.v3_0.internal.OkHttp3Singletons
 import io.opentelemetry.sdk.OpenTelemetrySdk
 import io.opentelemetry.sdk.testing.exporter.InMemorySpanExporter
 import io.opentelemetry.sdk.trace.SdkTracerProvider
 import io.opentelemetry.sdk.trace.SpanProcessor
 import io.opentelemetry.sdk.trace.data.SpanData
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor
-import io.reactivex.Single
-import okhttp3.Call
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Test
@@ -40,7 +35,7 @@ import java.io.IOException
 
 
 @RunWith(RobolectricTestRunner::class)
-@Config(manifest=Config.NONE)
+@Config(manifest = Config.NONE)
 class JaegerPropagatorMiniTest {
 
     @Test
@@ -52,9 +47,10 @@ class JaegerPropagatorMiniTest {
         server.enqueue(MockResponse().setResponseCode(200).setBody("""
             {"token":"1234"}
         """.trimIndent()))
-        server.enqueue(MockResponse().setResponseCode(403).setBody("""
-            {"status":"rejected"}
+        server.enqueue(MockResponse().setResponseCode(200).setBody("""
+            {"status":"granted"}
         """.trimIndent()))
+        val restApi = RestApiUtil.restApi(server)
         GlobalOpenTelemetry.resetForTest()
 
         //step 1: config the telemetrySdk
@@ -74,10 +70,10 @@ class JaegerPropagatorMiniTest {
         //step 2: start trace
         val tracer: Tracer = GlobalOpenTelemetry.getTracer("TestTracer")
         Context.current().with(rootBaggage()).makeCurrent().use {
-            val rootSpan: Span = triggerRootSpan(tracer, server)
+            val rootSpan: Span = triggerRootSpan(tracer, restApi)
             assertRoot(inMemorySpanExporter, server, rootSpan)
             Context.current().with(loggedInBaggage()).makeCurrent().use {
-                val loggedInSpan: Span = triggerLoggedInSpan(tracer, server)
+                val loggedInSpan: Span = triggerLoggedInSpan(tracer, restApi)
                 assertLoggedIn(inMemorySpanExporter, server, loggedInSpan)
             }
         }
@@ -88,27 +84,27 @@ class JaegerPropagatorMiniTest {
     }
 
 
-    private fun triggerRootSpan(tracer: Tracer, server: MockWebServer): Span {
+    private fun triggerRootSpan(tracer: Tracer, restApi: RestApi): Span {
         val rootSpan: Span = rootSpan(tracer)
-        rootSpan.addEvent("started_event")
+        rootSpan.addEvent("start_logging_in")
         //act
         rootSpan.makeCurrent().use {
-            execute(server)
+            login(restApi)
         }
-        rootSpan.addEvent("ended_event")
+        rootSpan.addEvent("finished_logging_in")
         rootSpan.end()
         return rootSpan
     }
 
 
-    private fun triggerLoggedInSpan(tracer: Tracer, server: MockWebServer): Span {
+    private fun triggerLoggedInSpan(tracer: Tracer, restApi: RestApi): Span {
         val loggedInSpan: Span = rootSpan(tracer)
-        loggedInSpan.addEvent("start_logging_in")
+        loggedInSpan.addEvent("start_fetching_profile")
         //act
         loggedInSpan.makeCurrent().use {
-            execute(server)
+            checkProfile(restApi)
         }
-        loggedInSpan.addEvent("finished_logging_in")
+        loggedInSpan.addEvent("end_fetching_profile")
         loggedInSpan.end()
         return loggedInSpan
     }
@@ -162,7 +158,6 @@ class JaegerPropagatorMiniTest {
     }
 
 
-
     private fun assertLoggedIn(inMemorySpanExporter: InMemorySpanExporter, server: MockWebServer, rootSpan: Span) {
         val finishedSpanItems = inMemorySpanExporter.finishedSpanItems
         assertThat(finishedSpanItems).hasSize(4)
@@ -186,7 +181,7 @@ class JaegerPropagatorMiniTest {
         assertThat(uberTraceId).isEqualTo(assembledTracedId)
         assertThat(finishedSpanItems[2].spanId).isNotEqualTo(rootSpan.spanContext.spanId)
         assertThat(finishedSpanItems[3].spanId).isEqualTo(rootSpan.spanContext.spanId)
-        assertThat(spanData.attributes[AttributeKey.longKey("http.response.status_code")]).isEqualTo(403)
+        assertThat(spanData.attributes[AttributeKey.longKey("http.response.status_code")]).isEqualTo(200)
         assertThat(spanData.attributes[AttributeKey.stringKey("http.response.status_code")]).isNull()
 
         val currentContext = Context.current()
@@ -201,20 +196,13 @@ class JaegerPropagatorMiniTest {
         return "$traceId:$spanId:0:1"
     }
 
-    private fun execute(server: MockWebServer) {
-        val client: OkHttpClient = OkHttpClient.Builder()
-                .addInterceptor(FixedTestInterceptor())
-                //Pay attention that this is done without any context related to open telemetry.
-                .addNetworkInterceptor(OkHttp3Singletons.TRACING_INTERCEPTOR)
-                .build()
-        createCall(client, server).execute().close()
+    private fun login(restApi: RestApi): UserToken {
+        return restApi.login(1).execute().body()!!
     }
 
-    private fun createCall(client: OkHttpClient, server: MockWebServer): Call {
-        val request: Request = Request.Builder().url(server.url("/test/")).build()
-        return client.newCall(request)
+    private fun checkProfile(restApi: RestApi):UserStatus {
+        return restApi.profile("1234").execute().body()!!
     }
-
 
     private fun rootBaggage(): Baggage {
         return Baggage.builder()
@@ -222,6 +210,7 @@ class JaegerPropagatorMiniTest {
                 .put("user.id", "321")
                 .build()
     }
+
     private fun loggedInBaggage(): Baggage {
         return Baggage.builder()
                 .put("user.logged_in", "true")
@@ -229,12 +218,13 @@ class JaegerPropagatorMiniTest {
     }
 }
 
-interface RestApi{
+interface RestApi {
     @GET("auth")
     fun login(@Header("x-bypass") flag: Int): retrofit2.Call<UserToken>
 
     @GET("profile")
-    fun profile(@Header("token") flag: String): retrofit2.Call<JsonElement>
+    fun profile(@Header("token") flag: String): retrofit2.Call<UserStatus>
 }
 
 data class UserToken(@SerializedName("token") val token: String)
+data class UserStatus(@SerializedName("status") val status: String)
