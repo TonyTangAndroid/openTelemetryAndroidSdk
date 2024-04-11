@@ -10,6 +10,7 @@ internal class TestInjectingInterceptor : Interceptor {
     @Throws(IOException::class)
     override fun intercept(chain: Chain): Response {
         val requestWithFixedHeader = withFixedHeader(chain)
+        Thread.sleep(100)
         return chain.proceed(requestWithFixedHeader)
     }
 
