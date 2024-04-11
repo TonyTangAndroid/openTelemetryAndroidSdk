@@ -50,8 +50,8 @@ class JaegerPropagatorTest {
         server.enqueue(MockResponse().setResponseCode(200).setBody("""
             {"token":"1234"}
         """.trimIndent()))
-        server.enqueue(MockResponse().setResponseCode(200).setBody("""
-            {"status":"4321"}
+        server.enqueue(MockResponse().setResponseCode(403).setBody("""
+            {"status":"rejected"}
         """.trimIndent()))
         GlobalOpenTelemetry.resetForTest()
 
@@ -75,7 +75,8 @@ class JaegerPropagatorTest {
             val rootSpan: Span = triggerRootSpan(tracer, server)
             assertRoot(inMemorySpanExporter, server, rootSpan)
             Context.current().with(loggedInBaggage()).makeCurrent().use {
-//                assertLoggedIn(inMemorySpanExporter, server, rootSpan)
+                val loggedInSpan: Span = triggerLoggedInSpan(tracer, server)
+                assertLoggedIn(inMemorySpanExporter, server, loggedInSpan)
             }
         }
 
@@ -97,12 +98,24 @@ class JaegerPropagatorTest {
         return rootSpan
     }
 
+
+    private fun triggerLoggedInSpan(tracer: Tracer, server: MockWebServer): Span {
+        val loggedInSpan: Span = rootSpan(tracer)
+        loggedInSpan.addEvent("start_logging_in")
+        //act
+        loggedInSpan.makeCurrent().use {
+            execute(loggedInSpan, server)
+        }
+        loggedInSpan.addEvent("finished_logging_in")
+        loggedInSpan.end()
+        return loggedInSpan
+    }
+
     private fun rootSpan(tracer: Tracer): Span {
         val spanBuilder: SpanBuilder = tracer.spanBuilder("A Test Span")
         spanBuilder.setAttribute("root_key_1", "root_key_2")
         spanBuilder.setSpanKind(SpanKind.CLIENT)
-        val rootSpan: Span = spanBuilder.startSpan()
-        return rootSpan
+        return spanBuilder.startSpan()
     }
 
 
@@ -158,13 +171,13 @@ class JaegerPropagatorTest {
      */
     private fun assertLoggedIn(inMemorySpanExporter: InMemorySpanExporter, server: MockWebServer, rootSpan: Span) {
         val finishedSpanItems = inMemorySpanExporter.finishedSpanItems
-        assertThat(finishedSpanItems).hasSize(2)
+        assertThat(finishedSpanItems).hasSize(4)
         val recordedRequest = server.takeRequest()
         //affirm
-        assertThat(recordedRequest.headers).hasSize(8)
+        assertThat(recordedRequest.headers).hasSize(7)
         val list: List<Pair<String, String>> = recordedRequest.headers.filter { it.first.startsWith("uberctx") }
         assertThat(list).containsExactlyElementsIn(
-                listOf(Pair("uberctx-user.id", "321"), Pair("uberctx-user.name", "jack"))
+                listOf(Pair("uberctx-user.logged_in", "true"))
         )
         val uberTraceId = recordedRequest.headers["uber-trace-id"]
         val spanTraceId = rootSpan.spanContext.traceId
@@ -174,12 +187,12 @@ class JaegerPropagatorTest {
         assertThat(uberTraceId).isNotEmpty()
         assertThat(uberTraceId).startsWith(spanTraceId)
         assertThat(uberTraceId).isNotEqualTo("8d828d3c7c8663418b067492675bef12")
-        val spanData: SpanData = finishedSpanItems[0]
+        val spanData: SpanData = finishedSpanItems[2]
         val assembledTracedId = assembleRawTraceId(spanData)
         assertThat(uberTraceId).isEqualTo(assembledTracedId)
-        assertThat(finishedSpanItems[0].spanId).isNotEqualTo(rootSpan.spanContext.spanId)
-        assertThat(finishedSpanItems[1].spanId).isEqualTo(rootSpan.spanContext.spanId)
-        assertThat(spanData.attributes[AttributeKey.longKey("http.response.status_code")]).isEqualTo(200)
+        assertThat(finishedSpanItems[2].spanId).isNotEqualTo(rootSpan.spanContext.spanId)
+        assertThat(finishedSpanItems[3].spanId).isEqualTo(rootSpan.spanContext.spanId)
+        assertThat(spanData.attributes[AttributeKey.longKey("http.response.status_code")]).isEqualTo(403)
         assertThat(spanData.attributes[AttributeKey.stringKey("http.response.status_code")]).isNull()
 
         val currentContext = Context.current()
