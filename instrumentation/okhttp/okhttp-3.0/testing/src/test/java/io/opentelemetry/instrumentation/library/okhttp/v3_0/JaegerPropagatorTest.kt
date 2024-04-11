@@ -74,7 +74,7 @@ class JaegerPropagatorTest {
                 .put("user.id", "321")
                 .build()
         Context.current().with(baggage).makeCurrent().use {
-            val rootSpan: Span = span(tracer, server)
+            val rootSpan: Span = triggerRootSpan(tracer, server)
 
 
             //assert
@@ -86,7 +86,7 @@ class JaegerPropagatorTest {
         inMemorySpanExporter.reset()
     }
 
-    private fun span(tracer: Tracer, server: MockWebServer): Span {
+    private fun triggerRootSpan(tracer: Tracer, server: MockWebServer): Span {
         val rootSpan: Span = rootSpan(tracer)
         rootSpan.addEvent("started_event")
         //act
