@@ -5,7 +5,7 @@ package ui
 import io.opentelemetry.api.baggage.Baggage
 import io.opentelemetry.context.Context
 
-object ContextProgagationUtil {
+object ContextPropagationUtil {
 
     fun attachedCheckInStarted(): Baggage {
         return Baggage.builder()
