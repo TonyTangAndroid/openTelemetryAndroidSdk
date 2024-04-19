@@ -13,8 +13,6 @@ import io.opentelemetry.context.Context
  * 5, The main responsibility from feature developers
  *  is to pass along the Context across functions and features.
  *
- * Whenever a user click a button in demo, we generate a uuid with the tap interaction and pass it along.
- *
  */
 object ContextPropagationUtil {
 
