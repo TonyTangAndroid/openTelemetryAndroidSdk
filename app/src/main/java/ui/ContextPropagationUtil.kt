@@ -11,7 +11,9 @@ import io.opentelemetry.context.Context
  * 3, We revise the codegen to support receiving the  `context` as the parameter.
  * 4, We are responsible to inject the Context into the network request as http header.
  * 5, The main responsibility from feature developers
- * is to pass along the Context across functions and features
+ *  is to pass along the Context across functions and features.
+ *
+ *
  */
 object ContextPropagationUtil {
 
