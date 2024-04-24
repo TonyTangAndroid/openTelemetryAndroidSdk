@@ -11,23 +11,23 @@ import network.CheckOutResult
 
 class CheckOutRepo(private val appContext: AppContext) {
 
-    fun checkingOut(withBaggage: Boolean): Single<CheckOutResult> {
-        Context.current().with(ignoredBaggage()).makeCurrent().use {
-            return if (withBaggage) withBaggage() else withoutBaggage()
-        }
+    fun withBaggage(context: Context): Single<CheckOutResult> {
+        return Single.defer { withBaggageInternal(context) }
+                .subscribeOn(Schedulers.computation())
     }
 
-    private fun withBaggage(): Single<CheckOutResult> {
-        return Single.fromCallable { withBaggageInternal() }
+    private fun withBaggageInternal(context: Context): Single<CheckOutResult> {
+        return DemoApp.appScope(appContext).singleApi().checkout(checkOutExtraContext(context))
+
     }
 
-    private fun withBaggageInternal(): CheckOutResult {
-        Context.current().with(attachedBaggage()).makeCurrent().use {
-            return DemoApp.appScope(appContext).singleApi().checkout().execute().body()!!
-        }
+    private fun checkOutExtraContext(context: Context): Context {
+        return context.with(Baggage.fromContext(context).toBuilder()
+                .put("checkout_time_ms", System.currentTimeMillis().toString())
+                .build())
     }
 
-    private fun withoutBaggage(): Single<CheckOutResult> {
+    fun withoutBaggage(): Single<CheckOutResult> {
         return Single.defer { withoutBaggageInternal() }.subscribeOn(Schedulers.computation())
     }
 
@@ -35,19 +35,6 @@ class CheckOutRepo(private val appContext: AppContext) {
         return Context.current().with(attachedBaggageRx()).makeCurrent().use {
             DemoApp.appScope(appContext).singleApi().checkoutWithoutBaggage()
         }
-    }
-
-    private fun ignoredBaggage(): Baggage {
-        return Baggage.builder()
-                .put("user.name", "tony")
-                .put("user.id", "321")
-                .build()
-    }
-
-    private fun attachedBaggage(): Baggage {
-        return Baggage.builder()
-                .put("session_id", "test_session_id")
-                .build()
     }
 
     private fun attachedBaggageRx(): Baggage {
