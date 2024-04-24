@@ -10,29 +10,18 @@ import network.UserToken
 
 class AuthRepo(private val app: AppContext) {
 
-    fun auth(success: Boolean): Single<UserToken> {
-        return authInternal(if (success) 1 else 0)
+    fun auth(context: Context, success: Boolean): Single<UserToken> {
+        return authInternal(if (success) 1 else 0, context)
     }
 
-    private fun authInternal(flag: Int): Single<UserToken> {
-        return authWithExplicitOpenTelContext(flag)
+    private fun authInternal(flag: Int, context: Context): Single<UserToken> {
+        return authWithExplicitOpenTelContext(flag, context)
     }
 
-    private fun authWithExplicitOpenTelContext(flag: Int): Single<UserToken> {
-        val context: Context = authContext()
+    private fun authWithExplicitOpenTelContext(flag: Int, context: Context): Single<UserToken> {
         return DemoApp.appScope(app).singleApi().logInWithContext(context, flag)
     }
 
-     fun authContext(): Context {
-        val appScopeContext = OtelContextUtil.appScopeContext()
-        return appScopeContext.with(attachedBaggage(appScopeContext))
-    }
-
-    private fun attachedBaggage(appScopeContext: Context): Baggage {
-        return Baggage.fromContext(appScopeContext).toBuilder()
-                .put("auth_token", "fixed_auth_token_value")
-                .build()
-    }
 
 
 }

@@ -21,5 +21,16 @@ object OtelContextUtil {
         return cachedAppScopeContext.get()
     }
 
+    fun authContext(): Context {
+        val appScopeContext = appScopeContext()
+        return appScopeContext.with(attachedBaggage(appScopeContext))
+    }
+
+    private fun attachedBaggage(appScopeContext: Context): Baggage {
+        return Baggage.fromContext(appScopeContext).toBuilder()
+                .put("auth_token", "fixed_auth_token_value")
+                .build()
+    }
+
 }
 
