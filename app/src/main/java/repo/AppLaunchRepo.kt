@@ -5,13 +5,14 @@ import app.DemoApp
 import io.opentelemetry.api.baggage.Baggage
 import io.opentelemetry.context.Context
 import io.reactivex.Completable
+import network.ColdLaunchData
 
 class AppLaunchRepo(private val appContext: AppContext) {
 
-    fun notifyAppLaunch(context: Context): Completable {
+    fun notifyAppLaunch(context: Context, coldLaunchData: ColdLaunchData): Completable {
         val otelContext = context.with(attachedSendingNetwork(context))
         val token = TokenStore(appContext).token()
-        return DemoApp.appScope(appContext).singleApi().appLaunch(otelContext,  token)
+        return DemoApp.appScope(appContext).singleApi().appLaunch(otelContext, coldLaunchData, token)
     }
 
     private fun attachedSendingNetwork(context: Context): Baggage {
