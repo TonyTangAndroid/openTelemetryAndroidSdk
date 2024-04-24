@@ -225,12 +225,6 @@ class LoggedInFragment(private val authedContext: Context) : Fragment() {
                 .build()
     }
 
-    private fun attachedSendingNetwork(context: Context): Baggage {
-        return Baggage.fromContext(context).toBuilder()
-                .put("sending_network", System.currentTimeMillis().toString())
-                .build()
-    }
-
 
     interface LoggedOutListener {
         fun onLoggedOut()
