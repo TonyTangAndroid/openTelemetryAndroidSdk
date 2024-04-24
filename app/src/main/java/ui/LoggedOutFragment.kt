@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import app.AppContext
+import app.OtelContextUtil
 import com.example.hello_otel.R
 import network.UserToken
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider
@@ -44,19 +45,21 @@ class LoggedOutFragment : Fragment() {
     }
 
     private fun auth(success: Boolean) {
-        AuthRepo(appContext()).auth(success)
+        val authRepo = AuthRepo(appContext())
+        val authContext = OtelContextUtil.authContext()
+        authRepo.auth(authContext, success)
                 .observeOn(AndroidSchedulers.mainThread())
                 .autoDispose(AndroidLifecycleScopeProvider.from(this))
                 .subscribe(
-                        { onAuthSuccess(it) },
+                        { onAuthSuccess(it,authContext) },
                         { onAuthError(it) }
                 )
 
     }
 
-    private fun onAuthSuccess(it: UserToken) {
+    private fun onAuthSuccess(it: UserToken, authContext: io.opentelemetry.context.Context) {
         TokenStore(appContext()).saveToken(it.token)
-        (requireActivity() as LoggedInListener).onLoggedIn()
+        (requireActivity() as LoggedInListener).onLoggedIn(authContext)
     }
 
     private fun appContext() = AppContext.from(requireContext())
@@ -73,7 +76,7 @@ class LoggedOutFragment : Fragment() {
 
 
     interface LoggedInListener {
-        fun onLoggedIn()
+        fun onLoggedIn(authContext: io.opentelemetry.context.Context)
     }
 
 }

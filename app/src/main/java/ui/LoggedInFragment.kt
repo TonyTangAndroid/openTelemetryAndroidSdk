@@ -42,7 +42,7 @@ import repo.CheckOutRepo
 import repo.TokenStore
 import java.util.UUID
 
-class LoggedInFragment : Fragment() {
+class LoggedInFragment(private val authedContext: Context) : Fragment() {
 
     private lateinit var tvStatus: TextView
     private var progressDialogFragment: ProgressDialogFragment? = null
@@ -66,19 +66,26 @@ class LoggedInFragment : Fragment() {
         super.onViewCreated(loggedInView, savedInstanceState)
         tvStatus = loggedInView.findViewById(R.id.tv_status)
         loggedInView.findViewById<View>(R.id.btn_check_in).setOnClickListener {
-            kickOffCheckIn(generateInteractionContext("checked_button_clicked"))
+            kickOffCheckIn(checkInContext("check_in_button_clicked"))
         }
 
         loggedInView.findViewById<View>(R.id.btn_check_out).setOnClickListener {
-            checkingOut(checkout(true))
+            checkingOut(checkoutWithBaggage(checkOutContext("check_out_button_clicked")))
         }
         loggedInView.findViewById<View>(R.id.btn_check_out_without_baggage).setOnClickListener {
-            checkingOut(checkout(false))
+            checkingOut(checkout())
         }
     }
 
-    private fun generateInteractionContext(interactionName: String): Context {
-        return Context.current().with(Baggage.builder()
+    private fun checkInContext(interactionName: String): Context {
+        return authedContext.with(Baggage.fromContext(authedContext).toBuilder()
+                .put("interaction_uuid", UUID.randomUUID().toString())
+                .put("interaction_name", interactionName)
+                .build())
+    }
+
+    private fun checkOutContext(interactionName: String): Context {
+        return authedContext.with(Baggage.fromContext(authedContext).toBuilder()
                 .put("interaction_uuid", UUID.randomUUID().toString())
                 .put("interaction_name", interactionName)
                 .build())
@@ -126,7 +133,7 @@ class LoggedInFragment : Fragment() {
     }
 
     private fun onPermissionGranted() {
-        kickOffCheckIn(generateInteractionContext("checked_button_clicked"))
+        kickOffCheckIn(checkInContext("checked_button_clicked"))
     }
 
     override fun onAttach(context: android.content.Context) {
@@ -164,8 +171,12 @@ class LoggedInFragment : Fragment() {
                 .subscribe(this::updateStatus)
     }
 
-    private fun checkout(withBaggage: Boolean): Single<CheckOutResult> {
-        return CheckOutRepo(appContext()).checkingOut(withBaggage)
+    private fun checkoutWithBaggage(context: Context): Single<CheckOutResult> {
+        return CheckOutRepo(appContext()).withBaggage(context)
+    }
+
+    private fun checkout(): Single<CheckOutResult> {
+        return CheckOutRepo(appContext()).withoutBaggage()
     }
 
     private fun checkingIn(locationModel: LocationModel, context: Context): Single<CheckInResult> {
@@ -222,12 +233,6 @@ class LoggedInFragment : Fragment() {
     private fun attachedLocationFetched(context: Context): Baggage {
         return Baggage.fromContext(context).toBuilder()
                 .put("location_fetched", System.currentTimeMillis().toString())
-                .build()
-    }
-
-    private fun attachedSendingNetwork(context: Context): Baggage {
-        return Baggage.fromContext(context).toBuilder()
-                .put("sending_network", System.currentTimeMillis().toString())
                 .build()
     }
 

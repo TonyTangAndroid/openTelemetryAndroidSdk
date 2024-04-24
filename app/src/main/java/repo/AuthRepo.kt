@@ -2,6 +2,7 @@ package repo
 
 import app.AppContext
 import app.DemoApp
+import app.OtelContextUtil
 import io.opentelemetry.api.baggage.Baggage
 import io.opentelemetry.context.Context
 import io.reactivex.Single
@@ -9,28 +10,18 @@ import network.UserToken
 
 class AuthRepo(private val app: AppContext) {
 
-    fun auth(success: Boolean): Single<UserToken> {
-        return authInternal(if (success) 1 else 0)
+    fun auth(context: Context, success: Boolean): Single<UserToken> {
+        return authInternal(if (success) 1 else 0, context)
     }
 
-    private fun authInternal(flag: Int): Single<UserToken> {
-        return authWithExplicitOpenTelContext(flag)
+    private fun authInternal(flag: Int, context: Context): Single<UserToken> {
+        return authWithExplicitOpenTelContext(flag, context)
     }
 
-    private fun authWithExplicitOpenTelContext(flag: Int): Single<UserToken> {
-        val context: Context = explicitContext()
+    private fun authWithExplicitOpenTelContext(flag: Int, context: Context): Single<UserToken> {
         return DemoApp.appScope(app).singleApi().logInWithContext(context, flag)
     }
 
-    private fun explicitContext(): Context {
-        return Context.current().with(attachedBaggage())
-    }
-
-    private fun attachedBaggage(): Baggage {
-        return Baggage.builder()
-                .put("cold_launch_id", "fixed_cold_launch_id_with_tag")
-                .build()
-    }
 
 
 }

@@ -3,7 +3,6 @@ package app
 import android.app.Application
 import com.uber.autodispose.ScopeProvider
 import com.uber.autodispose.autoDispose
-import io.opentelemetry.context.Context
 import io.opentelemetry.sdk.testing.exporter.InMemorySpanExporter
 import io.opentelemetry.sdk.trace.data.SpanData
 import network.AppLaunchResult
@@ -44,15 +43,15 @@ class DemoApp : Application(), AppScope {
 
     private fun initHeavyOperation() {
         AppLaunchRepo(appContext = AppContext(this)).notifyAppLaunch(
-                Context.current(), AppScopeUtil.coldLaunchModel()
-        ).autoDispose(ScopeProvider.UNBOUND).subscribe(this::xxx)
+                OtelContextUtil.appScopeContext(), AppScopeUtil.coldLaunchModel()
+        ).autoDispose(ScopeProvider.UNBOUND).subscribe(this::onAppLaunchResultFetched)
         delayColdLaunch()
     }
 
     /**
      * Purposefully use Sleep method to simulate the heavy initialization method.
      */
-    private fun xxx(appLaunchResponse: AppLaunchResult) {
+    private fun onAppLaunchResultFetched(appLaunchResponse: AppLaunchResult) {
         Timber.tag(LOG_TAG).i("app launch finished: $appLaunchResponse")
     }
 

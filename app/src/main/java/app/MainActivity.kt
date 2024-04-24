@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.chuckerteam.chucker.api.Chucker
 import com.example.hello_otel.R
+import io.opentelemetry.context.Context
 import repo.TokenStore
 import timber.log.Timber
 import ui.LoggedInFragment
@@ -21,7 +22,7 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
         Timber.tag(AppConstants.TAG_TEL).i("$this onCreate")
         TracingUtil.endSpan()
         if (TokenStore(AppContext.from(this)).isLoggedIn()) {
-            bindLoggedInState()
+            bindLoggedInState(OtelContextUtil.appScopeContext())
         } else {
             bindLoggedOutState()
 
@@ -56,12 +57,12 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
 
     }
 
-    override fun onLoggedIn() {
-        bindLoggedInState()
+    override fun onLoggedIn(authContext: Context) {
+        bindLoggedInState(authContext)
     }
 
-    private fun bindLoggedInState() {
-        bindFragment(LoggedInFragment())
+    private fun bindLoggedInState(authedContext: Context) {
+        bindFragment(LoggedInFragment(authedContext))
     }
 
     private fun bindLoggedOutState() {
