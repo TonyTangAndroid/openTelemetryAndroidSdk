@@ -31,11 +31,25 @@ class DemoApp : Application(), AppScope {
 
     override fun onCreate() {
         super.onCreate()
+        AppDelegatePreInitUtil.init()
         plantTimberLogger()
-        MockWebServerUtil.initServer(server)
         OpenTelemetryUtil.configOpenTelemetry(inMemorySpanExporter)
+        MockWebServerUtil.initServer(server)
+        val coldLaunchIdSpan = TracingUtil.startUpSpan()
+        Timber.tag(AppConstants.TAG_TEL).i("[manual]:Cold launch span started:$coldLaunchIdSpan")
+        initHeavyOperation()
     }
 
+    private fun initHeavyOperation() {
+        delayColdLaunch()
+    }
+
+    /**
+     * Purposefully use Sleep method to simulate the heavy initialization method.
+     */
+    private fun delayColdLaunch() {
+       Thread.sleep(500)
+    }
 
     private fun plantTimberLogger() {
         Timber.plant(Timber.DebugTree())
@@ -59,7 +73,7 @@ class DemoApp : Application(), AppScope {
     }
 
     companion object {
-        const val LOG_TAG = "trace"
+        const val LOG_TAG = AppConstants.TAG_TEL
         fun appScope(context: AppContext): AppScope {
             return context.context.applicationContext as AppScope
         }
