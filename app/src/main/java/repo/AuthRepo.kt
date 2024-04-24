@@ -25,12 +25,12 @@ class AuthRepo(private val app: AppContext) {
 
     private fun explicitContext(): Context {
         val appScopeContext = OtelContextUtil.appScopeContext()
-        return appScopeContext.with(attachedBaggage())
+        return appScopeContext.with(attachedBaggage(appScopeContext))
     }
 
-    private fun attachedBaggage(): Baggage {
-        return Baggage.builder()
-                .put("cold_launch_id", "fixed_cold_launch_id_with_tag")
+    private fun attachedBaggage(appScopeContext: Context): Baggage {
+        return Baggage.fromContext(appScopeContext).toBuilder()
+                .put("auth_token", "fixed_auth_token_value")
                 .build()
     }
 
