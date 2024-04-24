@@ -6,18 +6,23 @@ import app.DemoApp
 import io.opentelemetry.api.baggage.Baggage
 import io.opentelemetry.context.Context
 import io.reactivex.Completable
+import io.reactivex.schedulers.Schedulers
 import network.ColdLaunchData
 
 class AppLaunchRepo(private val appContext: AppContext) {
 
     fun notifyAppLaunch(context: Context, coldLaunchModel: ColdLaunchModel): Completable {
+        return Completable.defer { notifyAppLaunchInternal(context, coldLaunchModel) } .subscribeOn(Schedulers.computation())
+    }
+
+    private fun notifyAppLaunchInternal(context: Context, coldLaunchModel: ColdLaunchModel): Completable {
         val otelContext = context.with(attachedSendingNetwork(context))
         val token = TokenStore(appContext).token()
         return DemoApp.appScope(appContext).singleApi().appLaunch(otelContext, coldLaunchData(coldLaunchModel), token)
     }
 
     private fun coldLaunchData(coldLaunchModel: ColdLaunchModel): ColdLaunchData {
-       return ColdLaunchData(coldLaunchModel.coldLaunchId.uuid,coldLaunchModel.timeMs)
+        return ColdLaunchData(coldLaunchModel.coldLaunchId.uuid, coldLaunchModel.timeMs)
     }
 
     private fun attachedSendingNetwork(context: Context): Baggage {
