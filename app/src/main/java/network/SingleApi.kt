@@ -12,7 +12,7 @@ import retrofit2.http.Tag
 interface SingleApi {
 
     @POST("app_launch")
-    fun appLaunch(@Tag context: Context, coldLaunchData: ColdLaunchData, @Header("x-token") flag: String):Single<AppLaunchResult>
+    fun appLaunch(@Tag context: Context, @Body coldLaunchData: ColdLaunchData, @Header("x-token") flag: String):Single<AppLaunchResult>
 
     @GET("log_in")
     fun logInWithContext(@Tag context: Context, @Header("x-bypass") flag: Int): Single<UserToken>
