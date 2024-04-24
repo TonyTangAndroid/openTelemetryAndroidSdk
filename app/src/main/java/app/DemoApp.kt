@@ -44,7 +44,7 @@ class DemoApp : Application(), AppScope {
 
     private fun initHeavyOperation() {
         AppLaunchRepo(appContext = AppContext(this)).notifyAppLaunch(
-                Context.current(), AppScopeUtil.coldLaunchModel()
+                OtelContextUtil.cachedContext(), AppScopeUtil.coldLaunchModel()
         ).autoDispose(ScopeProvider.UNBOUND).subscribe(this::onAppLaunchResultFetched)
         delayColdLaunch()
     }
