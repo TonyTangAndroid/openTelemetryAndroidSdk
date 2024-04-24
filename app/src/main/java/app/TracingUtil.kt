@@ -9,7 +9,7 @@ import timber.log.Timber
 
 object TracingUtil {
 
-    private val coldLaunchSpanStarted = Suppliers.memoize { startColdLaunchTracing() }
+    private val coldLaunchSpan = Suppliers.memoize { startColdLaunchTracing() }
 
     private fun startColdLaunchTracing(): Span {
         val coldLaunchStartSpan = OpenTelemetryUtil.tracer().spanBuilder(EventType.APP_COLD_LAUNCH_STARTED.eventName).startSpan()
@@ -43,7 +43,7 @@ object TracingUtil {
     }
 
     fun startUpSpan(): Span {
-        return coldLaunchSpanStarted.get()
+        return coldLaunchSpan.get()
     }
 
     fun endSpan() {
@@ -69,7 +69,6 @@ object TracingUtil {
         val coldLaunchStartedEvent = coldLaunchStartedEvent(coldLaunchUuid, coldLaunchTimeMs)
         coldLaunchEndedSpan.addEvent(EventType.APP_COLD_LAUNCH_ENDED.eventName, coldLaunchStartedEvent)
         Timber.tag(TAG_TEL).i("[manual]:Cold launch span ended:$coldLaunchEndedSpan")
-
     }
 
 

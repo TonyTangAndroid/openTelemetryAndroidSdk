@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.chuckerteam.chucker.api.Chucker
 import com.example.hello_otel.R
 import repo.TokenStore
+import timber.log.Timber
 import ui.LoggedInFragment
 import ui.LoggedOutFragment
 
@@ -18,6 +19,7 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         TracingUtil.endSpan()
+        Timber.tag(AppConstants.TAG_TEL).i("$this onCreate")
         if (TokenStore(AppContext.from(this)).isLoggedIn()) {
             bindLoggedInState()
         } else {
@@ -66,4 +68,30 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
         bindFragment(LoggedOutFragment())
     }
 
+    override fun onStart() {
+        super.onStart()
+        Timber.tag(AppConstants.TAG_TEL).i("$this onStart")
+
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Timber.tag(AppConstants.TAG_TEL).i("$this onStop")
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Timber.tag(AppConstants.TAG_TEL).i("$this onPause")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Timber.tag(AppConstants.TAG_TEL).i("$this onResume")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Timber.tag(AppConstants.TAG_TEL).i("$this onDestroy")
+    }
 }
