@@ -25,6 +25,6 @@ interface SingleApi {
     fun checkIn(@Tag context: Context? = null, @Body model: LocationModel, @Header("x-token") flag: String): Single<CheckInResult>
 
     @GET("check_out")
-    fun checkoutWithoutBaggage(): Single<CheckInResult>
+    fun checkoutWithoutBaggage(): Single<CheckOutResult>
 
 }

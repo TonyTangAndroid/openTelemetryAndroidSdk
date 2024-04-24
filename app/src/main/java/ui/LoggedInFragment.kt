@@ -18,7 +18,6 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import app.AppContext
-import app.AppScopeUtil
 import app.DemoApp
 import com.example.hello_otel.R
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -34,6 +33,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import network.CheckInResult
+import network.CheckOutResult
 import network.LocationEntity
 import network.LocationModel
 import network.LogOutStatus
@@ -150,7 +150,12 @@ class LoggedInFragment : Fragment() {
         progressDialogFragment?.dismiss()
     }
 
-    private fun checkingOut(call: Single<CheckInResult>) {
+    private fun updateStatus(it: CheckOutResult) {
+        this.tvStatus.text = it.status
+        progressDialogFragment?.dismiss()
+    }
+
+    private fun checkingOut(call: Single<CheckOutResult>) {
         call
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -158,7 +163,7 @@ class LoggedInFragment : Fragment() {
                 .subscribe(this::updateStatus)
     }
 
-    private fun checkout(withBaggage: Boolean): Single<CheckInResult> {
+    private fun checkout(withBaggage: Boolean): Single<CheckOutResult> {
         return CheckOutRepo(appContext()).checkingOut(withBaggage)
     }
 
