@@ -25,7 +25,6 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
             bindLoggedInState(OtelContextUtil.appScopeContext())
         } else {
             bindLoggedOutState()
-
         }
     }
 
