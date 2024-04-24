@@ -24,7 +24,11 @@ object MockWebServerUtil {
                               "status": "Checked In" 
                             }
                         """.trimIndent())
-
+                        "/rt/v1/app_launch" -> MockResponse().setResponseCode(200).setBody("""
+                            {
+                              "status": "recorded" 
+                            }
+                        """.trimIndent())
                         "/rt/v1/check_out" -> MockResponse().setResponseCode(200).setBody("""
                             {
                               "status": "Checked Out" 
