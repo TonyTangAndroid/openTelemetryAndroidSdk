@@ -2,8 +2,6 @@ package repo
 
 import app.AppContext
 import app.DemoApp
-import app.OtelContextUtil
-import io.opentelemetry.api.baggage.Baggage
 import io.opentelemetry.context.Context
 import io.reactivex.Single
 import network.UserToken

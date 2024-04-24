@@ -5,7 +5,6 @@ import app.ColdLaunchModel
 import app.DemoApp
 import io.opentelemetry.api.baggage.Baggage
 import io.opentelemetry.context.Context
-import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import network.AppLaunchResult
@@ -13,8 +12,8 @@ import network.ColdLaunchData
 
 class AppLaunchRepo(private val appContext: AppContext) {
 
-    fun notifyAppLaunch(context: Context, coldLaunchModel: ColdLaunchModel): Single<AppLaunchResult>  {
-        return Single.defer { notifyAppLaunchInternal(context, coldLaunchModel) } .subscribeOn(Schedulers.computation())
+    fun notifyAppLaunch(context: Context, coldLaunchModel: ColdLaunchModel): Single<AppLaunchResult> {
+        return Single.defer { notifyAppLaunchInternal(context, coldLaunchModel) }.subscribeOn(Schedulers.computation())
     }
 
     private fun notifyAppLaunchInternal(context: Context, coldLaunchModel: ColdLaunchModel): Single<AppLaunchResult> {
@@ -28,9 +27,7 @@ class AppLaunchRepo(private val appContext: AppContext) {
     }
 
     private fun attachedSendingNetwork(context: Context): Baggage {
-        return Baggage.fromContext(context).toBuilder()
-                .put("sending_network", System.currentTimeMillis().toString())
-                .build()
+        return Baggage.fromContext(context).toBuilder().put("sending_network", System.currentTimeMillis().toString()).build()
     }
 
 

@@ -32,15 +32,8 @@ class CheckOutRepo(private val appContext: AppContext) {
     }
 
     private fun withoutBaggageInternal(): Single<CheckOutResult> {
-        return Context.current().with(attachedBaggageRx()).makeCurrent().use {
-            DemoApp.appScope(appContext).singleApi().checkoutWithoutBaggage()
-        }
-    }
+        return DemoApp.appScope(appContext).singleApi().checkoutWithoutBaggage()
 
-    private fun attachedBaggageRx(): Baggage {
-        return Baggage.builder()
-                .put("session_id", "ignored_session_id")
-                .build()
     }
 
 }

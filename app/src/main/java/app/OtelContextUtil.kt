@@ -4,6 +4,7 @@ import com.google.common.base.Suppliers
 import io.opentelemetry.api.baggage.Baggage
 import io.opentelemetry.api.baggage.BaggageEntryMetadata
 import io.opentelemetry.context.Context
+import java.util.UUID
 
 object OtelContextUtil {
 
@@ -13,7 +14,7 @@ object OtelContextUtil {
         val model = AppScopeUtil.coldLaunchModel()
         return Context.current().with(Baggage.builder()
                 .put("cold_launch_uuid", model.coldLaunchId.uuid, BaggageEntryMetadata.create(model.timeMs.toString()))
-                .put("cold_launch_uuid", model.timeMs.toString())
+                .put("cold_launch_uuid_ms", model.timeMs.toString())
                 .build())
     }
 
@@ -28,7 +29,7 @@ object OtelContextUtil {
 
     private fun attachedBaggage(appScopeContext: Context): Baggage {
         return Baggage.fromContext(appScopeContext).toBuilder()
-                .put("auth_token", "fixed_auth_token_value")
+                .put("auth_action_uuid", UUID.randomUUID().toString())
                 .build()
     }
 
