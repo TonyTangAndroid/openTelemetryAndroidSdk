@@ -1,6 +1,7 @@
 package network
 
 import io.opentelemetry.context.Context
+import io.reactivex.Completable
 import io.reactivex.Single
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -9,6 +10,10 @@ import retrofit2.http.POST
 import retrofit2.http.Tag
 
 interface SingleApi {
+
+    @GET("app_launch")
+    fun appLaunch(@Tag context: Context):Completable
+
 
     @GET("log_in")
     fun logInWithContext(@Tag context: Context, @Header("x-bypass") flag: Int): Single<UserToken>
