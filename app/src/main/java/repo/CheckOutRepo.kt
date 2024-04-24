@@ -24,7 +24,7 @@ class CheckOutRepo(private val appContext: AppContext) {
 
     private fun withBaggageInternal(): CheckOutResult {
         Context.current().with(attachedBaggage()).makeCurrent().use {
-            return DemoApp.appScope(appContext).callableApi().checkout().execute().body()!!
+            return DemoApp.appScope(appContext).singleApi().checkout().execute().body()!!
         }
     }
 

@@ -27,4 +27,8 @@ interface SingleApi {
     @GET("check_out")
     fun checkoutWithoutBaggage(): Single<CheckOutResult>
 
+    @GET("check_out")
+    fun checkout(): retrofit2.Call<CheckOutResult>
+
+
 }
