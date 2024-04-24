@@ -12,5 +12,7 @@ object AppDelegatePreInitUtil {
     fun init() {
         val model = AppScopeUtil.coldLaunchModel()
         println("${AppConstants.TAG_TEL}:ColdLaunchModel accessed:$model")
+        AndroidLoggingHandler.reset(AndroidLoggingHandler())
+        Logger.getLogger(AppConstants.TAG_TEL).setLevel(Level.FINEST)
     }
 }
