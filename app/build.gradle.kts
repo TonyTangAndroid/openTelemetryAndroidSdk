@@ -42,6 +42,7 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation (libs.play.services.location)
+    implementation(libs.guava)
     implementation(project(":instrumentation:okhttp:okhttp-3.0:library"))
     debugImplementation (libs.chuck.library)
     releaseImplementation (libs.chuck.library.no.op)
