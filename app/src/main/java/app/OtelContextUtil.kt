@@ -7,7 +7,7 @@ import io.opentelemetry.context.Context
 
 object OtelContextUtil {
 
-    private val cachedContext = Suppliers.memoize { rawContext() }
+    private val cachedAppScopeContext = Suppliers.memoize { rawContext() }
 
     private fun rawContext(): Context {
         val model = AppScopeUtil.coldLaunchModel()
@@ -17,8 +17,8 @@ object OtelContextUtil {
                 .build())
     }
 
-    fun cachedContext(): Context {
-        return cachedContext.get()
+    fun appScopeContext(): Context {
+        return cachedAppScopeContext.get()
     }
 
 }

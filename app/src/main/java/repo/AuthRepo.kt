@@ -2,6 +2,7 @@ package repo
 
 import app.AppContext
 import app.DemoApp
+import app.OtelContextUtil
 import io.opentelemetry.api.baggage.Baggage
 import io.opentelemetry.context.Context
 import io.reactivex.Single
@@ -23,7 +24,8 @@ class AuthRepo(private val app: AppContext) {
     }
 
     private fun explicitContext(): Context {
-        return Context.current().with(attachedBaggage())
+        val appScopeContext = OtelContextUtil.appScopeContext()
+        return appScopeContext.with(attachedBaggage())
     }
 
     private fun attachedBaggage(): Baggage {

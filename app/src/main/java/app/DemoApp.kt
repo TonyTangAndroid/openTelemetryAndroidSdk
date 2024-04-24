@@ -3,7 +3,6 @@ package app
 import android.app.Application
 import com.uber.autodispose.ScopeProvider
 import com.uber.autodispose.autoDispose
-import io.opentelemetry.context.Context
 import io.opentelemetry.sdk.testing.exporter.InMemorySpanExporter
 import io.opentelemetry.sdk.trace.data.SpanData
 import network.AppLaunchResult
@@ -44,7 +43,7 @@ class DemoApp : Application(), AppScope {
 
     private fun initHeavyOperation() {
         AppLaunchRepo(appContext = AppContext(this)).notifyAppLaunch(
-                OtelContextUtil.cachedContext(), AppScopeUtil.coldLaunchModel()
+                OtelContextUtil.appScopeContext(), AppScopeUtil.coldLaunchModel()
         ).autoDispose(ScopeProvider.UNBOUND).subscribe(this::onAppLaunchResultFetched)
         delayColdLaunch()
     }
