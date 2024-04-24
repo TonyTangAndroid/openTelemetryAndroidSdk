@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
         Timber.tag(AppConstants.TAG_TEL).i("$this onCreate")
         TracingUtil.endSpan()
         if (TokenStore(AppContext.from(this)).isLoggedIn()) {
-            bindLoggedInState()
+            bindLoggedInState(OtelContextUtil.appScopeContext())
         } else {
             bindLoggedOutState()
 
@@ -58,11 +58,11 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
     }
 
     override fun onLoggedIn(authContext: Context) {
-        bindLoggedInState()
+        bindLoggedInState(authContext)
     }
 
-    private fun bindLoggedInState() {
-        bindFragment(LoggedInFragment())
+    private fun bindLoggedInState(authedContext: Context) {
+        bindFragment(LoggedInFragment(authedContext))
     }
 
     private fun bindLoggedOutState() {

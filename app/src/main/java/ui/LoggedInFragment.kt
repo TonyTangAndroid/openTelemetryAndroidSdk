@@ -42,7 +42,7 @@ import repo.CheckOutRepo
 import repo.TokenStore
 import java.util.UUID
 
-class LoggedInFragment : Fragment() {
+class LoggedInFragment(private val authedContext: Context) : Fragment() {
 
     private lateinit var tvStatus: TextView
     private var progressDialogFragment: ProgressDialogFragment? = null
@@ -66,7 +66,7 @@ class LoggedInFragment : Fragment() {
         super.onViewCreated(loggedInView, savedInstanceState)
         tvStatus = loggedInView.findViewById(R.id.tv_status)
         loggedInView.findViewById<View>(R.id.btn_check_in).setOnClickListener {
-            kickOffCheckIn(generateInteractionContext("checked_button_clicked"))
+            kickOffCheckIn(checkInContext("checked_button_clicked"))
         }
 
         loggedInView.findViewById<View>(R.id.btn_check_out).setOnClickListener {
@@ -77,8 +77,8 @@ class LoggedInFragment : Fragment() {
         }
     }
 
-    private fun generateInteractionContext(interactionName: String): Context {
-        return Context.current().with(Baggage.builder()
+    private fun checkInContext(interactionName: String): Context {
+        return authedContext.with(Baggage.fromContext(authedContext).toBuilder()
                 .put("interaction_uuid", UUID.randomUUID().toString())
                 .put("interaction_name", interactionName)
                 .build())
@@ -126,7 +126,7 @@ class LoggedInFragment : Fragment() {
     }
 
     private fun onPermissionGranted() {
-        kickOffCheckIn(generateInteractionContext("checked_button_clicked"))
+        kickOffCheckIn(checkInContext("checked_button_clicked"))
     }
 
     override fun onAttach(context: android.content.Context) {
