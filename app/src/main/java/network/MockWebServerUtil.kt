@@ -29,7 +29,6 @@ object MockWebServerUtil {
                               "status": "recorded" 
                             }
                         """.trimIndent())
-
                         "/rt/v1/check_out" -> MockResponse().setResponseCode(200).setBody("""
                             {
                               "status": "Checked Out" 
