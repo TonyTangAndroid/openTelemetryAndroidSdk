@@ -19,11 +19,11 @@ class AuthRepo(private val app: AppContext) {
     }
 
     private fun authWithExplicitOpenTelContext(flag: Int): Single<UserToken> {
-        val context: Context = explicitContext()
+        val context: Context = authContext()
         return DemoApp.appScope(app).singleApi().logInWithContext(context, flag)
     }
 
-    private fun explicitContext(): Context {
+     fun authContext(): Context {
         val appScopeContext = OtelContextUtil.appScopeContext()
         return appScopeContext.with(attachedBaggage(appScopeContext))
     }
