@@ -20,5 +20,3 @@ object OpenTelemetryUtil {
                 .build())
     }
 }
-
-//JaegerPropagator
