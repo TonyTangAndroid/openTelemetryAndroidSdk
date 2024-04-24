@@ -1,5 +1,3 @@
-@file:Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")
-
 package repo
 
 import app.AppContext

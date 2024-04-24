@@ -37,6 +37,7 @@ import network.CheckOutResult
 import network.LocationEntity
 import network.LocationModel
 import network.LogOutStatus
+import repo.CheckInRepo
 import repo.CheckOutRepo
 import repo.TokenStore
 import java.util.UUID
@@ -168,8 +169,7 @@ class LoggedInFragment : Fragment() {
     }
 
     private fun checkingIn(locationModel: LocationModel, context: Context): Single<CheckInResult> {
-
-        return DemoApp.appScope(appContext()).singleApi().checkIn(context.with(attachedSendingNetwork(context)), locationModel, TokenStore(appContext()).token())
+        return CheckInRepo(appContext()).checkingIn(locationModel, context)
     }
 
 
