@@ -1,5 +1,5 @@
 package app
 
 object AppConstants {
-    const val TAG_TEL = "utel_"
+    const val TAG_TEL = "logging"
 }
