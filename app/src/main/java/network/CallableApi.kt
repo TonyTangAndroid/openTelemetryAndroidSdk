@@ -15,7 +15,7 @@ interface CallableApi {
     fun checkIn(@Header("token") flag: String): retrofit2.Call<CheckInResult>
 
     @GET("check_out")
-    fun checkout(): retrofit2.Call<CheckInResult>
+    fun checkout(): retrofit2.Call<CheckOutResult>
 
 
 }
