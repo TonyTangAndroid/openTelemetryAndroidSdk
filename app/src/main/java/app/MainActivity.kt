@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.chuckerteam.chucker.api.Chucker
 import com.example.hello_otel.R
+import io.opentelemetry.context.Context
 import repo.TokenStore
 import timber.log.Timber
 import ui.LoggedInFragment
@@ -56,7 +57,7 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
 
     }
 
-    override fun onLoggedIn() {
+    override fun onLoggedIn(authContext: Context) {
         bindLoggedInState()
     }
 

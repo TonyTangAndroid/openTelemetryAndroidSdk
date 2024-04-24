@@ -59,7 +59,7 @@ class LoggedOutFragment : Fragment() {
 
     private fun onAuthSuccess(it: UserToken, authContext: io.opentelemetry.context.Context) {
         TokenStore(appContext()).saveToken(it.token)
-        (requireActivity() as LoggedInListener).onLoggedIn()
+        (requireActivity() as LoggedInListener).onLoggedIn(authContext)
     }
 
     private fun appContext() = AppContext.from(requireContext())
@@ -76,7 +76,7 @@ class LoggedOutFragment : Fragment() {
 
 
     interface LoggedInListener {
-        fun onLoggedIn()
+        fun onLoggedIn(authContext: io.opentelemetry.context.Context)
     }
 
 }
