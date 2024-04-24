@@ -18,8 +18,8 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        TracingUtil.endSpan()
         Timber.tag(AppConstants.TAG_TEL).i("$this onCreate")
+        TracingUtil.endSpan()
         if (TokenStore(AppContext.from(this)).isLoggedIn()) {
             bindLoggedInState()
         } else {

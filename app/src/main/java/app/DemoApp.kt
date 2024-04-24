@@ -38,6 +38,8 @@ class DemoApp : Application(), AppScope {
         val coldLaunchIdSpan = TracingUtil.startUpSpan()
         Timber.tag(AppConstants.TAG_TEL).i("[manual]:Cold launch span started:$coldLaunchIdSpan")
         initHeavyOperation()
+        Timber.tag(AppConstants.TAG_TEL).i("$this onCreate completed")
+
     }
 
     private fun initHeavyOperation() {
