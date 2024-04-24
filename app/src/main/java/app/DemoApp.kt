@@ -45,14 +45,14 @@ class DemoApp : Application(), AppScope {
     private fun initHeavyOperation() {
         AppLaunchRepo(appContext = AppContext(this)).notifyAppLaunch(
                 Context.current(), AppScopeUtil.coldLaunchModel()
-        ).autoDispose(ScopeProvider.UNBOUND).subscribe(this::xxx)
+        ).autoDispose(ScopeProvider.UNBOUND).subscribe(this::onAppLaunchResultFetched)
         delayColdLaunch()
     }
 
     /**
      * Purposefully use Sleep method to simulate the heavy initialization method.
      */
-    private fun xxx(appLaunchResponse: AppLaunchResult) {
+    private fun onAppLaunchResultFetched(appLaunchResponse: AppLaunchResult) {
         Timber.tag(LOG_TAG).i("app launch finished: $appLaunchResponse")
     }
 
