@@ -3,7 +3,6 @@ package app
 import android.app.Application
 import io.opentelemetry.sdk.testing.exporter.InMemorySpanExporter
 import io.opentelemetry.sdk.trace.data.SpanData
-import network.CallableApi
 import network.MockWebServerUtil
 import network.RestApiUtil
 import network.SingleApi
@@ -23,10 +22,6 @@ class DemoApp : Application(), AppScope {
 
     private val singleApi by lazy {
         retrofit.create(SingleApi::class.java)
-    }
-
-    private val callableApi by lazy {
-        retrofit.create(CallableApi::class.java)
     }
 
     override fun onCreate() {
@@ -64,10 +59,6 @@ class DemoApp : Application(), AppScope {
 
     override fun singleApi(): SingleApi {
         return singleApi
-    }
-
-    override fun callableApi(): CallableApi {
-        return callableApi
     }
 
     override fun recordedRequest(): RecordedRequest? {
