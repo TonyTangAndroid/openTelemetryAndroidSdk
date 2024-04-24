@@ -6,7 +6,6 @@ import io.opentelemetry.api.baggage.Baggage
 import io.opentelemetry.context.Context
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import network.CheckInResult
 import network.CheckOutResult
 
 
