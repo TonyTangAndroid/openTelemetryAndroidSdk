@@ -1,6 +1,7 @@
 package app
 
 import android.app.Application
+import io.opentelemetry.context.Context
 import io.opentelemetry.sdk.testing.exporter.InMemorySpanExporter
 import io.opentelemetry.sdk.trace.data.SpanData
 import network.MockWebServerUtil
@@ -8,6 +9,7 @@ import network.RestApiUtil
 import network.SingleApi
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
+import repo.AppLaunchRepo
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -38,6 +40,9 @@ class DemoApp : Application(), AppScope {
     }
 
     private fun initHeavyOperation() {
+        AppLaunchRepo(appContext = AppContext(this)).notifyAppLaunch(
+               Context.current(),AppScopeUtil.coldLaunchModel()
+        )
         delayColdLaunch()
     }
 
