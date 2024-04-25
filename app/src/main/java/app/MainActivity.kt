@@ -29,12 +29,19 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
         Timber.tag(AppConstants.TAG_TEL).i("$this onCreate")
         val interactiveContext = interactiveContext()
         trackActivityCreated(savedInstanceState)
-        if (TokenStore(AppContext.from(this)).isLoggedIn()) {
-            bindLoggedInState(interactiveContext)
+        val token = TokenStore(AppContext.from(this)).token()
+        if (token.isNotEmpty()) {
+            bindLoggedInState(authedContext(interactiveContext,token))
         } else {
             bindLoggedOutState()
         }
         TracingUtil.endSpan()
+    }
+
+    private fun authedContext(interactiveContext: Context, token: String): Context {
+        return interactiveContext.with(Baggage.fromContext(interactiveContext).toBuilder()
+                .put(KEY_AUTH_TOKEN, token)
+                .build())
     }
 
     private fun initInteractiveSessionUuid(savedInstanceState: Bundle?) {
@@ -140,5 +147,6 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
 
     companion object {
         const val KEY_INTERACTIVE_SESSION_UUID: String = "key_interactive_session_uuid"
+        const val KEY_AUTH_TOKEN: String = "auth_token"
     }
 }
