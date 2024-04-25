@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
         TracingUtil.endSpan()
         trackActivityCreated(savedInstanceState)
         if (TokenStore(AppContext.from(this)).isLoggedIn()) {
-            bindLoggedInState(OtelContextUtil.appScopeContext())
+            bindLoggedInState(activityScopeContext())
         } else {
             bindLoggedOutState()
         }
@@ -46,9 +46,14 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
     }
 
     private fun trackActivityCreated(savedInstanceState: Bundle?) {
-        ActivityCreatedRepo(AppContext(this)).notifyAppBecomingInteractive(OtelContextUtil.appScopeContext(), savedInstanceState)
+        ActivityCreatedRepo(AppContext(this)).notifyAppBecomingInteractive(activityScopeContext(), savedInstanceState)
                 .autoDispose(AndroidLifecycleScopeProvider.from(this))
                 .subscribe(this::onResultReady)
+    }
+
+    private fun activityScopeContext(): Context {
+        val appScopeContext = OtelContextUtil.appScopeContext()
+        return appScopeContext
     }
 
     private fun onResultReady(result: AppBecomeInteractiveResult) {
