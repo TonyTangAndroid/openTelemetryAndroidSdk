@@ -52,8 +52,7 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
     }
 
     private fun activityScopeContext(): Context {
-        val appScopeContext = OtelContextUtil.appScopeContext()
-        return appScopeContext
+        return OtelContextUtil.appScopeContext()
     }
 
     private fun onResultReady(result: AppBecomeInteractiveResult) {
@@ -89,8 +88,8 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
 
     }
 
-    override fun onLoggedIn(authContext: Context) {
-        bindLoggedInState(authContext)
+    override fun onLoggedIn(authedContext: Context) {
+        bindLoggedInState(authedContext)
     }
 
     private fun bindLoggedInState(authedContext: Context) {

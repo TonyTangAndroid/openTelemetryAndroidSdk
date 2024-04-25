@@ -76,7 +76,7 @@ class LoggedOutFragment : Fragment() {
 
 
     interface LoggedInListener {
-        fun onLoggedIn(authContext: io.opentelemetry.context.Context)
+        fun onLoggedIn(authedContext: io.opentelemetry.context.Context)
     }
 
 }
