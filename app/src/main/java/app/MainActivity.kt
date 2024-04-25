@@ -53,13 +53,13 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
     private fun savedBundleId(savedInstanceState: Bundle?): String? {
         return savedInstanceState?.getString(KEY_INTERACTIVE_SESSION_UUID, null)
                 .also {
-                    Timber.tag(AppConstants.TAG_TEL).i("savedBundleId $it")
+                    Timber.tag(AppConstants.TAG_TEL).i("restored $KEY_INTERACTIVE_SESSION_UUID:$it")
                 }
     }
 
     private fun generateInteractiveSessionUuid(): String {
         return UUID.randomUUID().toString().also {
-            Timber.tag(AppConstants.TAG_TEL).i("generateInteractiveSessionUuid $it")
+            Timber.tag(AppConstants.TAG_TEL).i("generateInteractiveSessionUuid:$it")
         }
     }
 
@@ -140,13 +140,12 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putString(KEY_INTERACTIVE_SESSION_UUID, interactiveSessionUuid)
         super.onSaveInstanceState(outState)
-        Timber.tag(AppConstants.TAG_TEL).i("$this onSaveInstanceState saved $interactiveSessionUuid")
+        Timber.tag(AppConstants.TAG_TEL).i("$this:saved $KEY_INTERACTIVE_SESSION_UUID:$interactiveSessionUuid")
     }
 
     override fun onStop() {
         super.onStop()
         Timber.tag(AppConstants.TAG_TEL).i("$this onStop")
-
     }
 
     override fun onPause() {
