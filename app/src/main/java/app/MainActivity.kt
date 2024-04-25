@@ -28,10 +28,10 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
         setContentView(R.layout.activity_main)
         Timber.tag(AppConstants.TAG_TEL).i("$this onCreate")
         val interactiveContext = interactiveContext()
-        trackActivityCreated(savedInstanceState)
+        trackActivityCreated(savedInstanceState, interactiveContext)
         val token = TokenStore(AppContext.from(this)).token()
         if (token.isNotEmpty()) {
-            bindLoggedInState(authedContext(interactiveContext,token))
+            bindLoggedInState(authedContext(interactiveContext, token))
         } else {
             bindLoggedOutState()
         }
@@ -54,15 +54,18 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
         return UUID.randomUUID().toString()
     }
 
-    private fun trackActivityCreated(savedInstanceState: Bundle?) {
-        ActivityCreatedRepo(AppContext(this)).notifyAppBecomingInteractive(interactiveContext(), savedInstanceState)
+    private fun trackActivityCreated(savedInstanceState: Bundle?, interactiveContext: Context) {
+        ActivityCreatedRepo(AppContext(this)).notifyAppBecomingInteractive(interactiveContext, savedInstanceState)
                 .autoDispose(AndroidLifecycleScopeProvider.from(this))
                 .subscribe(this::onResultReady)
     }
 
     private fun interactiveContext(): Context {
-        val appScopeContext = OtelContextUtil.appScopeContext()
-        return appScopeContext.with(Baggage.fromContext(appScopeContext).toBuilder()
+        return assembleInteractiveContext(OtelContextUtil.appScopeContext())
+    }
+
+    private fun assembleInteractiveContext(context: Context): Context {
+        return context.with(Baggage.fromContext(context).toBuilder()
                 .put(KEY_INTERACTIVE_SESSION_UUID, interactiveSessionUuid)
                 .build())
     }
@@ -100,8 +103,13 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
 
     }
 
-    override fun onLoggedIn(authedContext: Context) {
-        bindLoggedInState(authedContext)
+    override fun onLoggedIn(actionModel: OtelAuthActionModel) {
+        bindLoggedInState(toAuthedContext(actionModel))
+    }
+
+    private fun toAuthedContext(actionModel: OtelAuthActionModel): Context {
+        val interactiveContext = assembleInteractiveContext(actionModel.authActionContext)
+        return authedContext(interactiveContext, actionModel.authToken)
     }
 
     private fun bindLoggedInState(authedContext: Context) {
@@ -119,7 +127,7 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putString(KEY_INTERACTIVE_SESSION_UUID, interactiveSessionUuid);
+        outState.putString(KEY_INTERACTIVE_SESSION_UUID, interactiveSessionUuid)
         super.onSaveInstanceState(outState)
         Timber.tag(AppConstants.TAG_TEL).i("$this onSaveInstanceState saved $interactiveSessionUuid")
     }
