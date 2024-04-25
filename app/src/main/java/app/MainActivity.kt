@@ -16,12 +16,14 @@ import repo.TokenStore
 import timber.log.Timber
 import ui.LoggedInFragment
 import ui.LoggedOutFragment
+import java.util.UUID
 
 class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, LoggedOutFragment.LoggedInListener {
-
+    private lateinit var interactiveSessionUuid: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initInteractiveSessionUuid(savedInstanceState)
         setContentView(R.layout.activity_main)
         Timber.tag(AppConstants.TAG_TEL).i("$this onCreate")
         TracingUtil.endSpan()
@@ -31,6 +33,16 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
         } else {
             bindLoggedOutState()
         }
+    }
+
+    private fun initInteractiveSessionUuid(savedInstanceState: Bundle?) {
+        interactiveSessionUuid = savedInstanceState?.getString(KEY_INTERACTIVE_SESSION_UUID, null)
+                ?: generateInteractiveSessionUuid()
+
+    }
+
+    private fun generateInteractiveSessionUuid(): String {
+        return UUID.randomUUID().toString()
     }
 
     private fun trackActivityCreated(savedInstanceState: Bundle?) {
@@ -90,6 +102,12 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
 
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString(KEY_INTERACTIVE_SESSION_UUID, interactiveSessionUuid);
+        super.onSaveInstanceState(outState)
+        Timber.tag(AppConstants.TAG_TEL).i("$this onSaveInstanceState saved $interactiveSessionUuid")
+    }
+
     override fun onStop() {
         super.onStop()
         Timber.tag(AppConstants.TAG_TEL).i("$this onStop")
@@ -109,5 +127,9 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
     override fun onDestroy() {
         super.onDestroy()
         Timber.tag(AppConstants.TAG_TEL).i("$this onDestroy")
+    }
+
+    companion object {
+        const val KEY_INTERACTIVE_SESSION_UUID: String = "key_interactive_session_uuid"
     }
 }
