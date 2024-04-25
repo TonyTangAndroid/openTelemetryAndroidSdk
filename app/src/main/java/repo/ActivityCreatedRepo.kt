@@ -1,35 +1,38 @@
 package repo
 
+import android.os.Bundle
 import app.AppContext
-import app.ColdLaunchModel
+import app.AppScopeUtil
 import app.DemoApp
 import io.opentelemetry.api.baggage.Baggage
 import io.opentelemetry.context.Context
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
+import network.AppBecomeInteractiveData
+import network.AppBecomeInteractiveResult
 import network.AppLaunchResult
 import network.ColdLaunchData
 
 class ActivityCreatedRepo(private val appContext: AppContext) {
 
-    fun notifyAppLaunch(context: Context, coldLaunchModel: ColdLaunchModel): Single<AppLaunchResult> {
-        return Single.defer { notifyAppLaunchInternal(context, coldLaunchModel) }.subscribeOn(Schedulers.computation())
+    fun notifyAppBecomingInteractive(context: Context, bundle: Bundle?): Single<AppBecomeInteractiveResult> {
+        return Single.defer { notifyAppLaunchInternal(context, bundle) }.subscribeOn(Schedulers.computation())
     }
 
-    private fun notifyAppLaunchInternal(context: Context, coldLaunchModel: ColdLaunchModel): Single<AppLaunchResult> {
-        val otelContext = context.with(attachedSendingNetwork(context))
-        val token = TokenStore(appContext).token()
-        return DemoApp.appScope(appContext).singleApi().appLaunch(otelContext, coldLaunchData(coldLaunchModel), token)
+    private fun notifyAppLaunchInternal(context: Context, bundle: Bundle?): Single<AppBecomeInteractiveResult> {
+        val otelContext = context.with(attachedStatus(context, bundle))
+        return DemoApp.appScope(appContext).singleApi().appBecomingInteractive(otelContext, appBecomeInteractiveData(bundle))
     }
 
-    private fun coldLaunchData(coldLaunchModel: ColdLaunchModel): ColdLaunchData {
-        return ColdLaunchData(coldLaunchModel.coldLaunchId.uuid, coldLaunchModel.timeMs)
+    private fun appBecomeInteractiveData(bundle: Bundle?): AppBecomeInteractiveData {
+        val model = AppScopeUtil.coldLaunchModel()
+        return AppBecomeInteractiveData(bundle, ColdLaunchData(model.coldLaunchId.uuid, model.timeMs))
     }
 
-    private fun attachedSendingNetwork(context: Context): Baggage {
-        return Baggage.fromContext(context).toBuilder().put("sending_network", System.currentTimeMillis().toString()).build()
+    private fun attachedStatus(context: Context, bundle: Bundle?): Baggage {
+        val restored = (bundle ?: false)
+        return Baggage.fromContext(context).toBuilder().put("activity_restored", restored.toString()).build()
     }
-
 
 }
 

@@ -7,7 +7,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.chuckerteam.chucker.api.Chucker
 import com.example.hello_otel.R
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider
+import com.uber.autodispose.autoDispose
 import io.opentelemetry.context.Context
+import network.AppBecomeInteractiveResult
+import repo.ActivityCreatedRepo
 import repo.TokenStore
 import timber.log.Timber
 import ui.LoggedInFragment
@@ -21,7 +25,7 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
         setContentView(R.layout.activity_main)
         Timber.tag(AppConstants.TAG_TEL).i("$this onCreate")
         TracingUtil.endSpan()
-        trackActivityCreated()
+        trackActivityCreated(savedInstanceState)
         if (TokenStore(AppContext.from(this)).isLoggedIn()) {
             bindLoggedInState(OtelContextUtil.appScopeContext())
         } else {
@@ -29,7 +33,15 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
         }
     }
 
-    private fun trackActivityCreated() {
+    private fun trackActivityCreated(savedInstanceState: Bundle?) {
+        ActivityCreatedRepo(AppContext(this)).notifyAppBecomingInteractive(OtelContextUtil.appScopeContext(), savedInstanceState)
+                .autoDispose(AndroidLifecycleScopeProvider.from(this))
+                .subscribe(this::onResultReady)
+    }
+
+    private fun onResultReady(result: AppBecomeInteractiveResult) {
+        Timber.tag(AppConstants.TAG_TEL).i("AppBecomeInteractiveResult:$result")
+
     }
 
     private fun bindFragment(fragment: Fragment) {
