@@ -45,13 +45,22 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
     }
 
     private fun initInteractiveSessionUuid(savedInstanceState: Bundle?) {
-        interactiveSessionUuid = savedInstanceState?.getString(KEY_INTERACTIVE_SESSION_UUID, null)
+        interactiveSessionUuid = savedBundleId(savedInstanceState)
                 ?: generateInteractiveSessionUuid()
 
     }
 
+    private fun savedBundleId(savedInstanceState: Bundle?): String? {
+        return savedInstanceState?.getString(KEY_INTERACTIVE_SESSION_UUID, null)
+                .also {
+                    Timber.tag(AppConstants.TAG_TEL).i("savedBundleId $it")
+                }
+    }
+
     private fun generateInteractiveSessionUuid(): String {
-        return UUID.randomUUID().toString()
+        return UUID.randomUUID().toString().also {
+            Timber.tag(AppConstants.TAG_TEL).i("generateInteractiveSessionUuid $it")
+        }
     }
 
     private fun trackActivityCreated(savedInstanceState: Bundle?, interactiveContext: Context) {
