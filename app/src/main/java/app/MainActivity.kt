@@ -21,11 +21,15 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
         setContentView(R.layout.activity_main)
         Timber.tag(AppConstants.TAG_TEL).i("$this onCreate")
         TracingUtil.endSpan()
+        trackActivityCreated()
         if (TokenStore(AppContext.from(this)).isLoggedIn()) {
             bindLoggedInState(OtelContextUtil.appScopeContext())
         } else {
             bindLoggedOutState()
         }
+    }
+
+    private fun trackActivityCreated() {
     }
 
     private fun bindFragment(fragment: Fragment) {
