@@ -14,6 +14,9 @@ interface SingleApi {
     @POST("app_launch")
     fun appLaunch(@Tag context: Context, @Body coldLaunchData: ColdLaunchData, @Header("x-token") flag: String):Single<AppLaunchResult>
 
+    @POST("become_interactive")
+    fun appBecomingInteractive(@Tag context: Context, @Body data: AppBecomeInteractiveData):Single<AppBecomeInteractiveResult>
+
     @GET("log_in")
     fun logInWithContext(@Tag context: Context, @Header("x-bypass") flag: Int): Single<UserToken>
 

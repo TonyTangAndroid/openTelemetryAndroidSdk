@@ -1,7 +1,10 @@
 package network
 
+import app.BundleTypeAdapterFactory
 import app.DemoApp
 import com.chuckerteam.chucker.api.ChuckerInterceptor
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import io.opentelemetry.instrumentation.library.okhttp.v3_0.internal.OkHttp3Singletons
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
@@ -23,9 +26,16 @@ object RestApiUtil {
         return Retrofit.Builder()
                 .client(client)
                 .baseUrl(server.url("rt/v1/"))
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(
+                        gson()
+                ))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .build()
+    }
+
+    private fun gson(): Gson {
+        return GsonBuilder()
+                .registerTypeAdapterFactory(BundleTypeAdapterFactory()).create()
     }
 
 }

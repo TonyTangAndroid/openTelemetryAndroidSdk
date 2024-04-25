@@ -22,12 +22,12 @@ object OtelContextUtil {
         return cachedAppScopeContext.get()
     }
 
-    fun authContext(): Context {
+    fun authActionContext(): Context {
         val appScopeContext = appScopeContext()
-        return appScopeContext.with(attachedBaggage(appScopeContext))
+        return appScopeContext.with(authActionBaggage(appScopeContext))
     }
 
-    private fun attachedBaggage(appScopeContext: Context): Baggage {
+    private fun authActionBaggage(appScopeContext: Context): Baggage {
         return Baggage.fromContext(appScopeContext).toBuilder()
                 .put("auth_action_uuid", UUID.randomUUID().toString())
                 .build()

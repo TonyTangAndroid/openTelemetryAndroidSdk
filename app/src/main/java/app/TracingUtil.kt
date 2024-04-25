@@ -46,9 +46,9 @@ object TracingUtil {
         return coldLaunchSpan.get()
     }
 
-    fun endSpan() {
+    fun endSpan(interactiveSessionUuid: String) {
         val startUpSpan: Span = startUpSpan()
-        traceColdLaunchEndedSpan(startUpSpan)
+        traceColdLaunchEndedSpan(startUpSpan,interactiveSessionUuid)
         startUpSpan.end()
 
     }
@@ -56,7 +56,7 @@ object TracingUtil {
     /**
      * Purposefully explicitly manually add extra duplicated information, which could be already available in Otel framework.
      */
-    private fun traceColdLaunchEndedSpan(coldLaunchEndedSpan: Span) {
+    private fun traceColdLaunchEndedSpan(coldLaunchEndedSpan: Span, interactiveSessionUuid: String) {
         val implicitTraceId = Span.current().spanContext.traceId
         val explicitTraceId = coldLaunchEndedSpan.spanContext.traceId
         val explicitSpanId = coldLaunchEndedSpan.spanContext.spanId
@@ -69,6 +69,7 @@ object TracingUtil {
         val coldLaunchStartedEvent = coldLaunchStartedEvent(coldLaunchUuid, coldLaunchTimeMs)
         coldLaunchEndedSpan.addEvent(EventType.APP_COLD_LAUNCH_ENDED.eventName, coldLaunchStartedEvent)
         Timber.tag(TAG_TEL).i("[manual]:Cold launch span ended:$coldLaunchEndedSpan")
+        Timber.tag(TAG_TEL).i("[manual]:Cold launch generated interactiveSessionUuid:$interactiveSessionUuid")
     }
 
 

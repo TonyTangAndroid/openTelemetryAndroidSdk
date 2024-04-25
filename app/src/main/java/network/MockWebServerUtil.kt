@@ -26,6 +26,11 @@ object MockWebServerUtil {
                         """.trimIndent())
                         "/rt/v1/app_launch" -> MockResponse().setResponseCode(200).setBody("""
                             {
+                              "status": "acknowledged" 
+                            }
+                        """.trimIndent())
+                        "/rt/v1/become_interactive" -> MockResponse().setResponseCode(200).setBody("""
+                            {
                               "status": "recorded" 
                             }
                         """.trimIndent())
