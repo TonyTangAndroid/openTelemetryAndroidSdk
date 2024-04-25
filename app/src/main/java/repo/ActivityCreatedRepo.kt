@@ -34,8 +34,8 @@ class ActivityCreatedRepo(private val appContext: AppContext) {
     }
 
     private fun attachedStatus(context: Context, bundle: Bundle?): Baggage {
-        val restored = (bundle ?: false)
-        return Baggage.fromContext(context).toBuilder().put("activity_restored", restored.toString()).build()
+        val restored = savedInteractiveSessionUuid(bundle) ?: ""
+        return Baggage.fromContext(context).toBuilder().put("activity_restored", restored).build()
     }
 
 }
