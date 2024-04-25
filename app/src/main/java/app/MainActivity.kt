@@ -9,6 +9,7 @@ import com.chuckerteam.chucker.api.Chucker
 import com.example.hello_otel.R
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider
 import com.uber.autodispose.autoDispose
+import io.opentelemetry.api.baggage.Baggage
 import io.opentelemetry.context.Context
 import network.AppBecomeInteractiveResult
 import repo.ActivityCreatedRepo
@@ -26,13 +27,14 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
         initInteractiveSessionUuid(savedInstanceState)
         setContentView(R.layout.activity_main)
         Timber.tag(AppConstants.TAG_TEL).i("$this onCreate")
-        TracingUtil.endSpan()
+        val interactiveContext = interactiveContext()
         trackActivityCreated(savedInstanceState)
         if (TokenStore(AppContext.from(this)).isLoggedIn()) {
-            bindLoggedInState(activityScopeContext())
+            bindLoggedInState(interactiveContext)
         } else {
             bindLoggedOutState()
         }
+        TracingUtil.endSpan()
     }
 
     private fun initInteractiveSessionUuid(savedInstanceState: Bundle?) {
@@ -46,13 +48,16 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
     }
 
     private fun trackActivityCreated(savedInstanceState: Bundle?) {
-        ActivityCreatedRepo(AppContext(this)).notifyAppBecomingInteractive(activityScopeContext(), savedInstanceState)
+        ActivityCreatedRepo(AppContext(this)).notifyAppBecomingInteractive(interactiveContext(), savedInstanceState)
                 .autoDispose(AndroidLifecycleScopeProvider.from(this))
                 .subscribe(this::onResultReady)
     }
 
-    private fun activityScopeContext(): Context {
-        return OtelContextUtil.appScopeContext()
+    private fun interactiveContext(): Context {
+        val appScopeContext = OtelContextUtil.appScopeContext()
+        return appScopeContext.with(Baggage.fromContext(appScopeContext).toBuilder()
+                .put(KEY_INTERACTIVE_SESSION_UUID, interactiveSessionUuid)
+                .build())
     }
 
     private fun onResultReady(result: AppBecomeInteractiveResult) {
