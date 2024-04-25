@@ -1,0 +1,51 @@
+2024-04-24 21:41:09.910 24070-24070 System.out              com.example.hello_otel               I  logging:ColdLaunchModel generated :ColdLaunchModel(timeMs=1714020069910, coldLaunchId=ColdLaunchId(uuid=c9e44386-f29d-4c56-bffd-e597e521e2b8))
+2024-04-24 21:41:09.910 24070-24070 System.out              com.example.hello_otel               I  logging:ColdLaunchModel accessed:ColdLaunchModel(timeMs=1714020069910, coldLaunchId=ColdLaunchId(uuid=c9e44386-f29d-4c56-bffd-e597e521e2b8))
+2024-04-24 21:41:09.911 24070-24070 logging                 com.example.hello_otel               I  Demo App started
+2024-04-24 21:41:09.990 24070-24070 logging                 com.example.hello_otel               I  [start]:explicit_trace_id:03094848acfe042561fabe2c46a1143d,implicit_trace_id:03094848acfe042561fabe2c46a1143d
+2024-04-24 21:41:09.990 24070-24070 logging                 com.example.hello_otel               I  [start]:start_explicit_span_id:7916ae275e39617f
+2024-04-24 21:41:09.991 24070-24070 logging                 com.example.hello_otel               I  [manual]:Cold launch span started:SdkSpan{traceId=03094848acfe042561fabe2c46a1143d, spanId=7916ae275e39617f, parentSpanContext=ImmutableSpanContext{traceId=00000000000000000000000000000000, spanId=0000000000000000, traceFlags=00, traceState=ArrayBasedTraceState{entries=[]}, remote=false, valid=false}, name=cold_launch_started, kind=INTERNAL, attributes=AttributesMap{data={attr_launch_id_time_ms=1714020069910, attr_cold_launch_id=c9e44386-f29d-4c56-bffd-e597e521e2b8}, capacity=128, totalAddedValues=2}, status=ImmutableStatusData{statusCode=UNSET, description=}, totalRecordedEvents=1, totalRecordedLinks=0, startEpochNanos=1714020069990000000, endEpochNanos=0}
+2024-04-24 21:41:10.138 24070-24107 LoggingSpanExporter     com.example.hello_otel               I  'POST' : 5027561873b35fdcd6824d582b6650ba f2f80d9aa21c419b CLIENT [tracer: io.opentelemetry.okhttp-3.0:2.1.0-alpha] AttributesMap{data={server.port=43531, server.address=localhost, http.response.status_code=200, network.protocol.version=1.1, http.request.method=POST, url.full=http://localhost:43531/rt/v1/app_launch}, capacity=128, totalAddedValues=6}
+2024-04-24 21:41:10.145 24070-24107 logging                 com.example.hello_otel               I  app launch finished: AppLaunchResult(status=acknowledged)
+2024-04-24 21:41:10.497 24070-24070 logging                 com.example.hello_otel               I  app.DemoApp@7f3f373 onCreate completed
+2024-04-24 21:41:10.540 24070-24070 logging                 com.example.hello_otel               I  restored key_interactive_session_uuid:null
+2024-04-24 21:41:10.540 24070-24070 logging                 com.example.hello_otel               I  generateInteractiveSessionUuid:fe7b5a12-a4c6-4387-90c2-5cc43325a9df
+2024-04-24 21:41:10.540 24070-24070 logging                 com.example.hello_otel               I  [end]:explicit_trace_id:03094848acfe042561fabe2c46a1143d,implicit_trace_id:00000000000000000000000000000000
+2024-04-24 21:41:10.540 24070-24070 logging                 com.example.hello_otel               I  [end]:explicit_span_id:7916ae275e39617f
+2024-04-24 21:41:10.541 24070-24070 logging                 com.example.hello_otel               I  [manual]:Cold launch span ended:SdkSpan{traceId=03094848acfe042561fabe2c46a1143d, spanId=7916ae275e39617f, parentSpanContext=ImmutableSpanContext{traceId=00000000000000000000000000000000, spanId=0000000000000000, traceFlags=00, traceState=ArrayBasedTraceState{entries=[]}, remote=false, valid=false}, name=cold_launch_started, kind=INTERNAL, attributes=AttributesMap{data={attr_launch_id_time_ms=1714020069910, attr_cold_launch_id=c9e44386-f29d-4c56-bffd-e597e521e2b8}, capacity=128, totalAddedValues=4}, status=ImmutableStatusData{statusCode=UNSET, description=}, totalRecordedEvents=2, totalRecordedLinks=0, startEpochNanos=1714020069990000000, endEpochNanos=0}
+2024-04-24 21:41:10.541 24070-24070 logging                 com.example.hello_otel               I  [manual]:Cold launch generated interactiveSessionUuid:fe7b5a12-a4c6-4387-90c2-5cc43325a9df
+2024-04-24 21:41:10.541 24070-24070 LoggingSpanExporter     com.example.hello_otel               I  'cold_launch_started' : 03094848acfe042561fabe2c46a1143d 7916ae275e39617f INTERNAL [tracer: HelloOtel:0.0.1] AttributesMap{data={attr_launch_id_time_ms=1714020069910, attr_cold_launch_id=c9e44386-f29d-4c56-bffd-e597e521e2b8}, capacity=128, totalAddedValues=4}
+2024-04-24 21:41:10.579 24070-24070 logging                 com.example.hello_otel               I  app.MainActivity@d650419 onCreate
+2024-04-24 21:41:10.601 24070-24107 LoggingSpanExporter     com.example.hello_otel               I  'POST' : 47ccc18656b1df4fbd3317f5a6a6d10d 9fc8c0313c4d5a2e CLIENT [tracer: io.opentelemetry.okhttp-3.0:2.1.0-alpha] AttributesMap{data={server.port=43531, server.address=localhost, http.response.status_code=200, network.protocol.version=1.1, http.request.method=POST, url.full=http://localhost:43531/rt/v1/become_interactive}, capacity=128, totalAddedValues=6}
+2024-04-24 21:41:10.607 24070-24107 logging                 com.example.hello_otel               I  AppBecomeInteractiveResult:AppBecomeInteractiveResult(status=recorded)
+2024-04-24 21:41:10.638 24070-24070 logging                 com.example.hello_otel               I  app.MainActivity@d650419 onStart
+2024-04-24 21:41:10.641 24070-24070 logging                 com.example.hello_otel               I  app.MainActivity@d650419 onResume
+
+
+
+
+
+
+2024-04-24 21:41:16.973 24070-24070 logging                 com.example.hello_otel               I  app.MainActivity@d650419 onPause
+2024-04-24 21:41:16.976 24070-24070 logging                 com.example.hello_otel               I  app.MainActivity@d650419:saved key_interactive_session_uuid:fe7b5a12-a4c6-4387-90c2-5cc43325a9df
+2024-04-24 21:41:16.977 24070-24070 logging                 com.example.hello_otel               I  app.MainActivity@d650419 onStop
+2024-04-24 21:41:16.982 24070-24070 logging                 com.example.hello_otel               I  app.MainActivity@d650419 onDestroy
+2024-04-24 21:41:17.018 24070-24070 logging                 com.example.hello_otel               I  restored key_interactive_session_uuid:fe7b5a12-a4c6-4387-90c2-5cc43325a9df
+2024-04-24 21:41:17.043 24070-24070 logging                 com.example.hello_otel               I  app.MainActivity@2be95a9 onCreate
+2024-04-24 21:41:17.081 24070-24107 LoggingSpanExporter     com.example.hello_otel               I  'POST' : 5241de4f511b1c7a24cfd97a946c6826 5d351c5810925438 CLIENT [tracer: io.opentelemetry.okhttp-3.0:2.1.0-alpha] AttributesMap{data={server.port=43531, server.address=localhost, http.response.status_code=200, network.protocol.version=1.1, http.request.method=POST, url.full=http://localhost:43531/rt/v1/become_interactive}, capacity=128, totalAddedValues=6}
+2024-04-24 21:41:17.095 24070-24107 logging                 com.example.hello_otel               I  AppBecomeInteractiveResult:AppBecomeInteractiveResult(status=recorded)
+2024-04-24 21:41:17.122 24070-24070 logging                 com.example.hello_otel               I  app.MainActivity@2be95a9 onStart
+2024-04-24 21:41:17.123 24070-24070 logging                 com.example.hello_otel               I  app.MainActivity@2be95a9 onResume
+
+
+
+2024-04-24 21:41:20.533 24070-24070 logging                 com.example.hello_otel               I  app.MainActivity@2be95a9 onPause
+2024-04-24 21:41:20.536 24070-24070 logging                 com.example.hello_otel               I  app.MainActivity@2be95a9:saved key_interactive_session_uuid:fe7b5a12-a4c6-4387-90c2-5cc43325a9df
+2024-04-24 21:41:20.538 24070-24070 logging                 com.example.hello_otel               I  app.MainActivity@2be95a9 onStop
+2024-04-24 21:41:20.543 24070-24070 logging                 com.example.hello_otel               I  app.MainActivity@2be95a9 onDestroy
+2024-04-24 21:41:20.569 24070-24070 logging                 com.example.hello_otel               I  restored key_interactive_session_uuid:fe7b5a12-a4c6-4387-90c2-5cc43325a9df
+2024-04-24 21:41:20.590 24070-24070 logging                 com.example.hello_otel               I  app.MainActivity@3838e9c onCreate
+2024-04-24 21:41:20.613 24070-24107 LoggingSpanExporter     com.example.hello_otel               I  'POST' : 8ee150ad812406a34daacd767b95487a 66a01d0647aa6f08 CLIENT [tracer: io.opentelemetry.okhttp-3.0:2.1.0-alpha] AttributesMap{data={server.port=43531, server.address=localhost, http.response.status_code=200, network.protocol.version=1.1, http.request.method=POST, url.full=http://localhost:43531/rt/v1/become_interactive}, capacity=128, totalAddedValues=6}
+2024-04-24 21:41:20.619 24070-24107 logging                 com.example.hello_otel               I  AppBecomeInteractiveResult:AppBecomeInteractiveResult(status=recorded)
+2024-04-24 21:41:20.651 24070-24070 logging                 com.example.hello_otel               I  app.MainActivity@3838e9c onStart
+2024-04-24 21:41:20.652 24070-24070 logging                 com.example.hello_otel               I  app.MainActivity@3838e9c onResume
+
