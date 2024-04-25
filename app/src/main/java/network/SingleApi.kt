@@ -1,7 +1,6 @@
 package network
 
 import io.opentelemetry.context.Context
-import io.reactivex.Completable
 import io.reactivex.Single
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -12,10 +11,13 @@ import retrofit2.http.Tag
 interface SingleApi {
 
     @POST("app_launch")
-    fun appLaunch(@Tag context: Context, @Body coldLaunchData: ColdLaunchData, @Header("x-token") flag: String):Single<AppLaunchResult>
+    fun appLaunch(@Tag context: Context, @Body coldLaunchData: ColdLaunchData, @Header("x-token") flag: String): Single<AppLaunchResult>
+
+    @POST("device_rebooted")
+    fun deviceRebooted(@Tag context: Context, @Body data: DeviceRebootedData): Single<DeviceRebootedResult>
 
     @POST("become_interactive")
-    fun appBecomingInteractive(@Tag context: Context, @Body data: AppBecomeInteractiveData):Single<AppBecomeInteractiveResult>
+    fun appBecomingInteractive(@Tag context: Context, @Body data: AppBecomeInteractiveData): Single<AppBecomeInteractiveResult>
 
     @GET("log_in")
     fun logInWithContext(@Tag context: Context, @Header("x-bypass") flag: Int): Single<UserToken>
@@ -30,7 +32,7 @@ interface SingleApi {
     fun checkoutWithoutBaggage(): Single<CheckOutResult>
 
     @GET("check_out")
-    fun checkout(@Tag context: Context?):Single<CheckOutResult>
+    fun checkout(@Tag context: Context?): Single<CheckOutResult>
 
 
 }
