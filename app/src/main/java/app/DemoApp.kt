@@ -34,8 +34,7 @@ class DemoApp : Application(), AppScope {
         plantTimberLogger()
         OpenTelemetryUtil.configOpenTelemetry(inMemorySpanExporter)
         MockWebServerUtil.initServer(server)
-        val coldLaunchIdSpan = TracingUtil.startUpSpan()
-        Timber.tag(AppConstants.TAG_TEL).i("[manual]:Cold launch span started:$coldLaunchIdSpan")
+        TracingUtil.startSpan()
         initHeavyOperation()
         Timber.tag(AppConstants.TAG_TEL).i("$this onCreate completed")
 
