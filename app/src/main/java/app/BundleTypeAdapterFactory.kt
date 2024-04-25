@@ -12,7 +12,6 @@ import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
 import java.io.IOException
 
-@VisibleForTesting
 class BundleTypeAdapterFactory : TypeAdapterFactory {
   override fun <T> create(gson: Gson, type: TypeToken<T>): TypeAdapter<T>? {
     return if (!Bundle::class.java.isAssignableFrom(type.rawType)) {
