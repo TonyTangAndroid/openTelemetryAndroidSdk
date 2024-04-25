@@ -4,13 +4,13 @@ import android.os.Bundle
 import app.AppContext
 import app.AppScopeUtil
 import app.DemoApp
+import app.MainActivity
 import io.opentelemetry.api.baggage.Baggage
 import io.opentelemetry.context.Context
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import network.AppBecomeInteractiveData
 import network.AppBecomeInteractiveResult
-import network.AppLaunchResult
 import network.ColdLaunchData
 
 class ActivityCreatedRepo(private val appContext: AppContext) {
@@ -26,7 +26,11 @@ class ActivityCreatedRepo(private val appContext: AppContext) {
 
     private fun appBecomeInteractiveData(bundle: Bundle?): AppBecomeInteractiveData {
         val model = AppScopeUtil.coldLaunchModel()
-        return AppBecomeInteractiveData(bundle, ColdLaunchData(model.coldLaunchId.uuid, model.timeMs))
+        return AppBecomeInteractiveData(savedInteractiveSessionUuid(bundle), ColdLaunchData(model.coldLaunchId.uuid, model.timeMs))
+    }
+
+    private fun savedInteractiveSessionUuid(bundle: Bundle?): String? {
+        return bundle?.getString(MainActivity.KEY_INTERACTIVE_SESSION_UUID)
     }
 
     private fun attachedStatus(context: Context, bundle: Bundle?): Baggage {
