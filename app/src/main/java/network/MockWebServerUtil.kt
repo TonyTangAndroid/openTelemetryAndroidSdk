@@ -24,16 +24,25 @@ object MockWebServerUtil {
                               "status": "Checked In" 
                             }
                         """.trimIndent())
+
                         "/rt/v1/app_launch" -> MockResponse().setResponseCode(200).setBody("""
                             {
                               "status": "acknowledged" 
                             }
                         """.trimIndent())
+
                         "/rt/v1/become_interactive" -> MockResponse().setResponseCode(200).setBody("""
                             {
                               "status": "recorded" 
                             }
                         """.trimIndent())
+
+                        "/rt/v1/device_rebooted" -> MockResponse().setResponseCode(200).setBody("""
+                            {
+                              "status": "tracked" 
+                            }
+                        """.trimIndent())
+
                         "/rt/v1/check_out" -> MockResponse().setResponseCode(200).setBody("""
                             {
                               "status": "Checked Out" 
