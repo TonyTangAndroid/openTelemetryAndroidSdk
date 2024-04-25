@@ -42,8 +42,8 @@ import repo.CheckOutRepo
 import repo.TokenStore
 import java.util.UUID
 
-class LoggedInFragment(private val authedContext: Context) : Fragment() {
-
+class LoggedInFragment : Fragment() {
+    private lateinit var authedContext: Context
     private lateinit var tvStatus: TextView
     private var progressDialogFragment: ProgressDialogFragment? = null
     private val fusedLocationClient: FusedLocationProviderClient by lazy {
@@ -57,6 +57,9 @@ class LoggedInFragment(private val authedContext: Context) : Fragment() {
         }
     }
 
+    fun setAuthedContext(authedContext: Context) {
+        this.authedContext = authedContext
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.fragment_logged_in, container, false)

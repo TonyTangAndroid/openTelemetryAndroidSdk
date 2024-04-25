@@ -122,7 +122,9 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
     }
 
     private fun bindLoggedInState(authedContext: Context) {
-        bindFragment(LoggedInFragment(authedContext))
+        val fragment = LoggedInFragment()
+        fragment.setAuthedContext(authedContext)
+        bindFragment(fragment)
     }
 
     private fun bindLoggedOutState() {
