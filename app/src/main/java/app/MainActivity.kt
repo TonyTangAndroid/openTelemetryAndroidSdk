@@ -35,7 +35,6 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
         } else {
             bindLoggedOutState()
         }
-        TracingUtil.endSpan()
     }
 
     private fun authedContext(interactiveContext: Context, token: String): Context {
@@ -60,6 +59,7 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
     private fun generateInteractiveSessionUuid(): String {
         return UUID.randomUUID().toString().also {
             Timber.tag(AppConstants.TAG_TEL).i("generateInteractiveSessionUuid:$it")
+            TracingUtil.endSpan(it)
         }
     }
 
