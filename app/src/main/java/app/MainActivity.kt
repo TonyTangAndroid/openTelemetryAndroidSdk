@@ -56,6 +56,9 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
                 }
     }
 
+    /**
+     * Only end the span of a cold launch if it is absolute new.
+     */
     private fun generateInteractiveSessionUuid(): String {
         return UUID.randomUUID().toString().also {
             Timber.tag(AppConstants.TAG_TEL).i("generateInteractiveSessionUuid:$it")
