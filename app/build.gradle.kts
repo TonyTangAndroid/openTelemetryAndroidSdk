@@ -22,7 +22,6 @@ dependencies {
     api(libs.opentelemetry.exporter.logging)
     api(libs.opentelemetry.extension.trace.propagators)
     api(libs.okhttp.mockwebserver)
-    api(project(":android-agent"))
     api(libs.annotationx)
     api(libs.retrofit)
     api(libs.converter.gson)
@@ -43,7 +42,8 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation (libs.play.services.location)
     implementation(libs.guava)
-    implementation(project(":instrumentation:okhttp:okhttp-3.0:library"))
+    //noinspection UseTomlInstead
+    implementation("io.opentelemetry.android:okhttp-3.0-library:0.5.0-alpha")
     debugImplementation (libs.chuck.library)
     releaseImplementation (libs.chuck.library.no.op)
     testImplementation(libs.junit)
