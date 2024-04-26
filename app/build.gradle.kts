@@ -42,6 +42,8 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation (libs.play.services.location)
     implementation(libs.guava)
+    //noinspection UseTomlInstead
+    implementation("io.opentelemetry.android:okhttp-3.0-library:0.5.0-alpha")
     debugImplementation (libs.chuck.library)
     releaseImplementation (libs.chuck.library.no.op)
     testImplementation(libs.junit)
