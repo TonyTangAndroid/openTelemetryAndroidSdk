@@ -15,6 +15,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RestApiUtil {
 
+    /**
+     * Create a Retrofit instance with a MockWebServer
+     */
     fun retrofit(app: DemoApp, server: MockWebServer): Retrofit {
         val client: OkHttpClient = OkHttpClient.Builder()
                 .addInterceptor(FirstFixedInterceptor())

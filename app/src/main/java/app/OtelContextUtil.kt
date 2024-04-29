@@ -7,9 +7,9 @@ import io.opentelemetry.context.Context
 
 object OtelContextUtil {
 
-    private val cachedAppScopeContext = Suppliers.memoize { rawContext() }
+    private val cachedAppScopeContext = Suppliers.memoize { rootedContext() }
 
-    private fun rawContext(): Context {
+    private fun rootedContext(): Context {
         val model = AppScopeUtil.coldLaunchModel()
         return Context.current().with(Baggage.builder()
                 .put("cold_launch_uuid", model.coldLaunchId.uuid, BaggageEntryMetadata.create(model.timeMs.toString()))

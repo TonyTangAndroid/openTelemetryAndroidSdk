@@ -88,10 +88,14 @@ class LoggedInFragment : Fragment() {
     }
 
     private fun checkOutContext(interactionName: String): Context {
-        return authedContext.with(Baggage.fromContext(authedContext).toBuilder()
+        val originalContext = authedContext
+        val existingBaggage: Baggage = Baggage.fromContext(originalContext)
+        val newBaggage: Baggage = existingBaggage.toBuilder()
                 .put("interaction_uuid", UUID.randomUUID().toString())
                 .put("interaction_name", interactionName)
-                .build())
+                .build()
+        val newContext: Context = authedContext.with(newBaggage)
+        return newContext
     }
 
     private fun kickOffCheckIn(context: Context) {
