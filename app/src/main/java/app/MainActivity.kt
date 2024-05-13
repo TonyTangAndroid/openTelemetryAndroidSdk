@@ -10,7 +10,6 @@ import com.example.hello_otel.R
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider
 import com.uber.autodispose.autoDispose
 import io.opentelemetry.api.baggage.Baggage
-import io.opentelemetry.api.trace.Span
 import io.opentelemetry.context.Context
 import network.AppBecomeInteractiveResult
 import repo.ActivityCreatedRepo
@@ -25,12 +24,6 @@ class MainActivity : AppCompatActivity(), LoggedInFragment.LoggedOutListener, Lo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val current = Span.current()
-        val makeCurrent = current.makeCurrent()
-        //do some magic
-        current.end()
-
         initInteractiveSessionUuid(savedInstanceState)
         setContentView(R.layout.activity_main)
         Timber.tag(AppConstants.TAG_TEL).i("$this onCreate")
