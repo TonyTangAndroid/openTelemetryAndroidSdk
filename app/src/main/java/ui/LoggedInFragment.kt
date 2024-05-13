@@ -7,6 +7,7 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Bundle
 import android.os.Looper
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -45,6 +46,7 @@ import java.util.UUID
 class LoggedInFragment : Fragment() {
     private lateinit var authedContext: Context
     private lateinit var tvStatus: TextView
+    private lateinit var tvDeviceModel: TextView
     private var progressDialogFragment: ProgressDialogFragment? = null
     private val fusedLocationClient: FusedLocationProviderClient by lazy {
         LocationServices.getFusedLocationProviderClient(requireActivity())
@@ -68,6 +70,7 @@ class LoggedInFragment : Fragment() {
     override fun onViewCreated(loggedInView: View, savedInstanceState: Bundle?) {
         super.onViewCreated(loggedInView, savedInstanceState)
         tvStatus = loggedInView.findViewById(R.id.tv_status)
+        tvDeviceModel = loggedInView.findViewById(R.id.tv_device_model)
         loggedInView.findViewById<View>(R.id.btn_check_in).setOnClickListener {
             kickOffCheckIn(checkInContext("check_in_button_clicked"))
         }
@@ -85,6 +88,23 @@ class LoggedInFragment : Fragment() {
                 .put("interaction_uuid", UUID.randomUUID().toString())
                 .put("interaction_name", interactionName)
                 .build())
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val deviceName = getDeviceName(requireContext())
+        val deviceModel = android.os.Build.MODEL
+        tvDeviceModel.text = "device_name: $deviceName\ndevice_model: $deviceModel"
+    }
+
+
+    private fun getDeviceName(context: android.content.Context): String? {
+        return try {
+            Settings.Global.getString(context.contentResolver, Settings.Global.DEVICE_NAME)
+        } catch (e: SecurityException) {
+            // Handle the exception if the permission is not granted
+            null
+        }
     }
 
     private fun checkOutContext(interactionName: String): Context {
