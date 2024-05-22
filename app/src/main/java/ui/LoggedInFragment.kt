@@ -5,6 +5,7 @@ package ui
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.net.wifi.WifiInfo
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
@@ -43,12 +44,14 @@ import network.LogOutStatus
 import repo.CheckInRepo
 import repo.CheckOutRepo
 import repo.TokenStore
+import timber.log.Timber
 import java.util.UUID
 
 class LoggedInFragment : Fragment() {
     private lateinit var authedContext: Context
     private lateinit var tvStatus: TextView
     private lateinit var tvDeviceModel: TextView
+    private lateinit var tvWifiName: TextView
     private var progressDialogFragment: ProgressDialogFragment? = null
     private val fusedLocationClient: FusedLocationProviderClient by lazy {
         LocationServices.getFusedLocationProviderClient(requireActivity())
@@ -73,11 +76,9 @@ class LoggedInFragment : Fragment() {
         super.onViewCreated(loggedInView, savedInstanceState)
         tvStatus = loggedInView.findViewById(R.id.tv_status)
         tvDeviceModel = loggedInView.findViewById(R.id.tv_device_model)
+        tvWifiName = loggedInView.findViewById(R.id.tv_wifi_name)
         loggedInView.findViewById<View>(R.id.btn_check_in).setOnClickListener {
-            kickOffCheckIn(checkInContext("check_in_button_clicked")).also {
-
-                WifiUtil.getCurrentNetworkDetail(AppContext.from(requireContext()))
-            }
+            kickOffCheckIn(checkInContext("check_in_button_clicked"))
         }
 
         loggedInView.findViewById<View>(R.id.btn_check_out).setOnClickListener {
@@ -99,7 +100,9 @@ class LoggedInFragment : Fragment() {
         super.onResume()
         val deviceName = getDeviceName(requireContext())
         val deviceModel = android.os.Build.MODEL
+        val wifiName =WifiUtil.wifi(AppContext(requireContext()))
         tvDeviceModel.text = "device_name: $deviceName\ndevice_model: $deviceModel"
+        tvWifiName.text = "$wifiName"
     }
 
 
@@ -263,7 +266,6 @@ class LoggedInFragment : Fragment() {
                 .put("location_fetched", System.currentTimeMillis().toString())
                 .build()
     }
-
 
 
     interface LoggedOutListener {

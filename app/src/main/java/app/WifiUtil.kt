@@ -1,35 +1,37 @@
+@file:Suppress("DEPRECATION")
+
 package app
 
 import android.content.Context
+import android.content.Context.CONNECTIVITY_SERVICE
 import android.net.ConnectivityManager
-import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.text.TextUtils
-import android.widget.Toast
-import timber.log.Timber
+import model.Absent
+import model.Disconnected
+import model.Wifi
+import model.WifiName
 
 object WifiUtil {
 
-    fun getCurrentNetworkDetail(context: AppContext) {
-        val connManager =
-            context.context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkInfo = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
-        if (networkInfo?.isConnected == true) {
-            val wifiManager = context.context.getSystemService(Context.WIFI_SERVICE) as WifiManager
-            val connectionInfo = wifiManager.connectionInfo
-            if (connectionInfo != null && !TextUtils.isEmpty(connectionInfo.ssid)) {
-                logSsid(connectionInfo, context)
-            } else {
-                Timber.tag("SSID").e("SSID is empty or null")
-            }
+    fun wifi(context: AppContext): Wifi {
+        val manager = context.context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
+        return if (networkInfo?.isConnected == true) {
+            extractWifi(context)
         } else {
-            Timber.tag("SSID").e("No WiFi connection")
+            Disconnected
         }
     }
 
-    private fun logSsid(info: WifiInfo, context: AppContext) {
-        Timber.tag("SSID").e(info.ssid)
-        Toast.makeText(context.context, "ssid:" + info.ssid, Toast.LENGTH_SHORT).show()
+    private fun extractWifi(context: AppContext): Wifi {
+        val wifiManager = context.context.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        val connectionInfo = wifiManager.connectionInfo
+        return if (connectionInfo != null && !TextUtils.isEmpty(connectionInfo.ssid)) {
+            WifiName(connectionInfo.ssid)
+        } else {
+            Absent
+        }
     }
 
 
