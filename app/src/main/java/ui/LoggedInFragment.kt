@@ -17,9 +17,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import app.AppContext
 import app.DemoApp
+import app.WifiUtil
 import com.example.hello_otel.R
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -72,7 +74,10 @@ class LoggedInFragment : Fragment() {
         tvStatus = loggedInView.findViewById(R.id.tv_status)
         tvDeviceModel = loggedInView.findViewById(R.id.tv_device_model)
         loggedInView.findViewById<View>(R.id.btn_check_in).setOnClickListener {
-            kickOffCheckIn(checkInContext("check_in_button_clicked"))
+            kickOffCheckIn(checkInContext("check_in_button_clicked")).also {
+
+                WifiUtil.getCurrentNetworkDetail(AppContext.from(requireContext()))
+            }
         }
 
         loggedInView.findViewById<View>(R.id.btn_check_out).setOnClickListener {
@@ -258,6 +263,7 @@ class LoggedInFragment : Fragment() {
                 .put("location_fetched", System.currentTimeMillis().toString())
                 .build()
     }
+
 
 
     interface LoggedOutListener {
