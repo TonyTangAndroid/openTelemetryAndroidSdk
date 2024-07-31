@@ -19,17 +19,24 @@ object OpenTelemetryUtil {
         return GlobalOpenTelemetry.get().getTracer("HelloOtel", "0.0.1")
     }
 
-    fun configOpenTelemetry(spanExporter: SpanExporter) {
-        val jaegerPropagator: JaegerPropagator = JaegerPropagator.getInstance()
-        val contextPropagators = ContextPropagators.create(jaegerPropagator)
+    fun configOpenTelemetry(spanExporter: SpanExporter, contextPropagators: ContextPropagators) {
         val spanProcessor = SimpleSpanProcessor.create(spanExporter)
         val loggingSpanExporter = SimpleSpanProcessor.create(LoggingSpanExporter.create())
         val sdkTracerProvider: SdkTracerProvider = SdkTracerProvider.builder()
                 .addSpanProcessor(spanProcessor)
                 .addSpanProcessor(loggingSpanExporter)
                 .build()
-        val telemetrySdk = OpenTelemetrySdk.builder().setTracerProvider(sdkTracerProvider).setPropagators(contextPropagators).build()
-        GlobalOpenTelemetry.set(telemetrySdk)
+        GlobalOpenTelemetry.set(
+            OpenTelemetrySdk.builder().setTracerProvider(sdkTracerProvider).setPropagators(
+                contextPropagators
+            ).build()
+        )
+    }
+
+     fun contextPropagators(): ContextPropagators {
+        val jaegerPropagator: JaegerPropagator = JaegerPropagator.getInstance()
+        val contextPropagators = ContextPropagators.create(jaegerPropagator)
+        return contextPropagators
     }
 
     fun tracer(): Tracer {
