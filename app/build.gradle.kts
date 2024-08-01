@@ -43,7 +43,8 @@ dependencies {
     implementation (libs.play.services.location)
     implementation(libs.guava)
     //noinspection UseTomlInstead
-    implementation("io.opentelemetry.android:okhttp-3.0-library:0.5.0-alpha")
+    implementation("io.opentelemetry.instrumentation:opentelemetry-okhttp-3.0:2.4.0-alpha")
+
     debugImplementation (libs.chuck.library)
     releaseImplementation (libs.chuck.library.no.op)
     testImplementation(libs.junit)

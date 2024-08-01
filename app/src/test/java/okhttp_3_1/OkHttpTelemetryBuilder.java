@@ -16,9 +16,9 @@ import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.instrumentation.api.instrumenter.AttributesExtractor;
 import io.opentelemetry.instrumentation.api.semconv.http.HttpClientAttributesExtractorBuilder;
 import io.opentelemetry.instrumentation.api.semconv.http.HttpSpanNameExtractorBuilder;
-import io.opentelemetry.instrumentation.okhttp.v3_0.internal.OkHttpInstrumenterFactory;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp_3_internal.OkHttpInstrumenterFactory;
 
 /** A builder of {@link OkHttpTelemetry}. */
 public final class OkHttpTelemetryBuilder {

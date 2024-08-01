@@ -5,7 +5,6 @@ import app.DemoApp
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import io.opentelemetry.instrumentation.library.okhttp.v3_0.internal.OkHttp3Singletons
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
@@ -20,7 +19,6 @@ object RestApiUtil {
                 .addInterceptor(FirstFixedInterceptor())
                 .addInterceptor(OtelContextRequestTagInterceptor())
                 .addInterceptor(ChuckerInterceptor.Builder(app).createShortcut(true).build())
-                .addInterceptor(OkHttp3Singletons.TRACING_INTERCEPTOR)
                 .addInterceptor(SecondFixedInterceptor())
                 .build()
         return Retrofit.Builder()
