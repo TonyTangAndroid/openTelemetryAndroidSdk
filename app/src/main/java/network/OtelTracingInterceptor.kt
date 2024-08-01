@@ -48,15 +48,12 @@ class OtelTracingInterceptor(
     }
 
 
-    // Context injection is being handled manually for a reason: we want to use the OkHttp Request
-    // type for additional AttributeExtractors provided by the user of this library
-    // thus we must use Instrumenter<Request, Response>, and Request is immutable
     private fun injectContextToRequest(request: Request, context: Context): Request {
         val requestBuilder: Request.Builder = request.newBuilder()
         propagators
             .textMapPropagator
             .inject(context, requestBuilder,
-                RequestHeaderSetter.INSTANCE
+                RequestHeaderSetter
             )
         return requestBuilder.build()
     }

@@ -1,24 +1,9 @@
-/*
- * Copyright The OpenTelemetry Authors
- * SPDX-License-Identifier: Apache-2.0
- */
+package network
 
-package network;
-
-import javax.annotation.Nullable;
-
-import io.opentelemetry.context.propagation.TextMapSetter;
-import okhttp3.Request;
-
-/** Helper class to inject span context into request headers. */
-enum RequestHeaderSetter implements TextMapSetter<Request.Builder> {
-  INSTANCE;
-
-  @Override
-  public void set(@Nullable Request.Builder carrier, String key, String value) {
-    if (carrier == null) {
-      return;
+import io.opentelemetry.context.propagation.TextMapSetter
+import okhttp3.Request.Builder
+object RequestHeaderSetter : TextMapSetter<Builder> {
+    override fun set(carrier: Builder?, key: String, value: String) {
+        carrier?.header(key, value)
     }
-    carrier.header(key, value);
-  }
 }
