@@ -28,8 +28,6 @@ public final class OkHttpInstrumenterFactory {
       OpenTelemetry openTelemetry) {
 
     OkHttpAttributesGetter httpAttributesGetter = OkHttpAttributesGetter.INSTANCE;
-
-
     HttpSpanNameExtractorBuilder<Request> httpSpanNameExtractorBuilder =
         HttpSpanNameExtractor.builder(httpAttributesGetter);
     InstrumenterBuilder<Request, Response> builder =
