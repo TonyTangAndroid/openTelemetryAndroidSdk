@@ -17,7 +17,7 @@ import java.io.IOException
  * This class is internal and is hence not for public use. Its APIs are unstable and can change at
  * any time.
  */
-class TracingInterceptor(
+class OtelTracingInterceptor(
     private val instrumenter: Instrumenter<Request, Response>,
     private val propagators: ContextPropagators
 ) : Interceptor {

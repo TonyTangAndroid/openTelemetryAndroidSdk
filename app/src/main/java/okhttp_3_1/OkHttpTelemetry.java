@@ -15,7 +15,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp_3_internal.ConnectionErrorSpanInterceptor;
-import okhttp_3_internal.TracingInterceptor;
+import okhttp_3_internal.OtelTracingInterceptor;
 
 /** Entrypoint for instrumenting OkHttp clients. */
 public final class OkHttpTelemetry {
@@ -54,7 +54,7 @@ public final class OkHttpTelemetry {
    */
   @Deprecated
   public Interceptor newInterceptor() {
-    return new TracingInterceptor(instrumenter, propagators);
+    return new OtelTracingInterceptor(instrumenter, propagators);
   }
 
   /**
