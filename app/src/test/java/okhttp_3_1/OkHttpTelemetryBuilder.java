@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package okhttp_3;
+package okhttp_3_1;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
