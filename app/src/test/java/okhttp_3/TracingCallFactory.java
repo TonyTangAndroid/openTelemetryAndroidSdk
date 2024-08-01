@@ -78,16 +78,24 @@ class TracingCallFactory implements Call.Factory {
     }
 
     @Override
-    public Call clone() throws CloneNotSupportedException {
+    public Call clone() {
       if (cloneMethod == null) {
-        return (Call) super.clone();
+          try {
+              return (Call) super.clone();
+          } catch (CloneNotSupportedException e) {
+              throw new RuntimeException(e);
+          }
       }
       try {
         // we pull the current context here, because the cloning might be happening in a different
         // context than the original call creation.
         return new TracingCall((Call) cloneMethod.invoke(delegate), Context.current());
       } catch (IllegalAccessException | InvocationTargetException e) {
-        return (Call) super.clone();
+          try {
+              return (Call) super.clone();
+          } catch (CloneNotSupportedException ex) {
+              throw new RuntimeException(ex);
+          }
       }
     }
 
