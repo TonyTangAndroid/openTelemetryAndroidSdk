@@ -12,7 +12,7 @@ object OtelContextUtil {
     private fun rawContext(): Context {
         val model = AppScopeUtil.coldLaunchModel()
         return Context.current().with(Baggage.builder()
-                .put("cold_launch_uuid", model.coldLaunchId.uuid, BaggageEntryMetadata.create(model.timeMs.toString()))
+                .put("cold_launch_id", model.coldLaunchId.uuid, BaggageEntryMetadata.create(model.timeMs.toString()))
                 .put("cold_launch_uuid_ms", model.timeMs.toString())
                 .build())
     }
