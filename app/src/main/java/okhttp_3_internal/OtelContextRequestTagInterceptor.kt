@@ -13,6 +13,4 @@ internal class OtelContextRequestTagInterceptor : Interceptor {
         val rawRequest = chain.request()
         return chain.proceed(rawRequest)
     }
-
-
 }
