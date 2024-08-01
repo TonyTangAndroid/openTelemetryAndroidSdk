@@ -1,4 +1,4 @@
-package network
+package okhttp_3_internal
 
 import io.opentelemetry.api.GlobalOpenTelemetry
 import io.opentelemetry.context.Context
