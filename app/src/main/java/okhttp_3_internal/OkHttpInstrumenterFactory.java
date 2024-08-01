@@ -22,7 +22,7 @@ import okhttp3.Response;
  */
 public final class OkHttpInstrumenterFactory {
 
-  private static final String INSTRUMENTATION_NAME = "io.opentelemetry.okhttp-3.0";
+  private static final String INSTRUMENTATION_NAME = "otel_okhttp";
 
   public static Instrumenter<Request, Response> create(
       OpenTelemetry openTelemetry) {
