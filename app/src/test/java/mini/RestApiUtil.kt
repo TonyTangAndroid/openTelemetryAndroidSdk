@@ -6,14 +6,13 @@ import okhttp3.mockwebserver.MockWebServer
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import xxx.TracingInterceptorFactory
 
 object RestApiUtil {
 
 
     fun restApi(server: MockWebServer): RestApi {
         val client: OkHttpClient = OkHttpClient.Builder()
-                .addInterceptor(TracingInterceptorFactory.getTracingInterceptor())
+                .addInterceptor(OkHttp3Singletons.TRACING_INTERCEPTOR)
                 .build()
         return Retrofit.Builder()
                 .client(client)
