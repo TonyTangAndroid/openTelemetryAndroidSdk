@@ -2,7 +2,7 @@
  * Copyright The OpenTelemetry Authors
  * SPDX-License-Identifier: Apache-2.0
  */
-package okhttp_3_internal
+package network
 
 import app.OtelContextUtil
 import io.opentelemetry.context.Context
@@ -55,7 +55,9 @@ class OtelTracingInterceptor(
         val requestBuilder: Request.Builder = request.newBuilder()
         propagators
             .textMapPropagator
-            .inject(context, requestBuilder, RequestHeaderSetter.INSTANCE)
+            .inject(context, requestBuilder,
+                RequestHeaderSetter.INSTANCE
+            )
         return requestBuilder.build()
     }
 }

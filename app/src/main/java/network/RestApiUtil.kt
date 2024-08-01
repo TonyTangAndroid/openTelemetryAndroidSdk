@@ -8,7 +8,6 @@ import com.google.gson.GsonBuilder
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
-import okhttp_3_android.OkHttp3Singletons
 import okhttp_3_internal.OtelContextRequestTagInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -21,7 +20,7 @@ object RestApiUtil {
             .addInterceptor(FirstFixedInterceptor())
             .addInterceptor(OtelContextRequestTagInterceptor())
             .addInterceptor(ChuckerInterceptor.Builder(app).createShortcut(true).build())
-            .addInterceptor(OkHttp3Singletons.TRACING_INTERCEPTOR)
+            .addInterceptor(OtelTracingInterceptorUtil.TRACING_INTERCEPTOR)
             .addInterceptor(SecondFixedInterceptor())
             .build()
         return Retrofit.Builder()

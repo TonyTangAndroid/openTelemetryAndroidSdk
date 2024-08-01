@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package okhttp_3_internal;
+package network;
 
 import javax.annotation.Nullable;
 

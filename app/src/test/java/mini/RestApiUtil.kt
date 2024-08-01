@@ -3,7 +3,7 @@ package mini
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
-import okhttp_3_android.OkHttp3Singletons
+import network.OtelTracingInterceptorUtil
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -13,7 +13,7 @@ object RestApiUtil {
 
     fun restApi(server: MockWebServer): RestApi {
         val client: OkHttpClient = OkHttpClient.Builder()
-                .addInterceptor(OkHttp3Singletons.TRACING_INTERCEPTOR)
+                .addInterceptor(OtelTracingInterceptorUtil.TRACING_INTERCEPTOR)
                 .build()
         return Retrofit.Builder()
                 .client(client)
