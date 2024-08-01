@@ -15,14 +15,14 @@ import io.opentelemetry.context.Scope;
 import io.opentelemetry.instrumentation.api.incubator.semconv.net.PeerServiceAttributesExtractor;
 import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter;
 import io.opentelemetry.instrumentation.api.semconv.http.HttpClientRequestResendCount;
-import io.opentelemetry.instrumentation.library.okhttp.v3_0.OkHttpInstrumentationConfig;
-import io.opentelemetry.instrumentation.okhttp.v3_0.internal.ConnectionErrorSpanInterceptor;
-import io.opentelemetry.instrumentation.okhttp.v3_0.internal.OkHttpAttributesGetter;
-import io.opentelemetry.instrumentation.okhttp.v3_0.internal.OkHttpInstrumenterFactory;
-import io.opentelemetry.instrumentation.okhttp.v3_0.internal.TracingInterceptor;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp_3_config.OkHttpInstrumentationConfig;
+import okhttp_3_internal.ConnectionErrorSpanInterceptor;
+import okhttp_3_internal.OkHttpAttributesGetter;
+import okhttp_3_internal.OkHttpInstrumenterFactory;
+import okhttp_3_internal.TracingInterceptor;
 
 /**
  * This class is internal and is hence not for public use. Its APIs are unstable and can change at
