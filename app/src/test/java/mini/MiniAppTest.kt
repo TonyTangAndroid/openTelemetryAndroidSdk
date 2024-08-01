@@ -104,12 +104,12 @@ class MiniAppTest {
     private fun assertRoot(rootSpan: Span) {
         val request = server.takeRequest()
         //affirm
-//        assertThat(request.headers).hasSize(8)
+        assertThat(request.headers).hasSize(8)
         val list: List<Pair<String, String>> = request.headers.filter { it.first.startsWith("uberctx") }
         //assert the root baggage
-//        assertThat(list).containsExactlyElementsIn(
-//                listOf(Pair("uberctx-user.id", "321"), Pair("uberctx-user.name", "jack"))
-//        )
+        assertThat(list.map { it.first }).containsExactlyElementsIn(
+                listOf("uberctx-cold_launch_id", "uberctx-cold_launch_uuid_ms"))
+
         //example value 8d828d3c7c8663418b067492675bef12
         assertThat(rootSpan.spanContext.traceId).isNotEmpty()
         //example value  8d828d3c7c8663418b067492675bef12:dae708107c50eb0f:0:1
