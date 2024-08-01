@@ -7,6 +7,8 @@ package network;
 
 import static io.opentelemetry.instrumentation.api.instrumenter.SpanKindExtractor.alwaysClient;
 
+import androidx.annotation.NonNull;
+
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter;
@@ -18,7 +20,6 @@ import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp_3_internal.OkHttpAttributesGetter;
-import okhttp_3_internal.OkHttpInstrumenterFactory;
 
 /**
  * This class is internal and is hence not for public use. Its APIs are unstable and can change at
@@ -41,12 +42,13 @@ public final class OtelTracingInterceptorUtil {
         return builder.buildInstrumenter(alwaysClient());
     }
 
-    public static final Interceptor TRACING_INTERCEPTOR =
-            new OtelTracingInterceptor(
-                    create(
-                            GlobalOpenTelemetry.get()
-                    ),
-                    GlobalOpenTelemetry.getPropagators());
+    public  static @NonNull OtelTracingInterceptor tracingInterceptor() {
+        return new OtelTracingInterceptor(
+                create(
+                        GlobalOpenTelemetry.get()
+                ),
+                GlobalOpenTelemetry.getPropagators());
+    }
 
     private OtelTracingInterceptorUtil() {
     }

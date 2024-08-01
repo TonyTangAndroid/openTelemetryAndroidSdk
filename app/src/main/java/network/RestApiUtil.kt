@@ -18,7 +18,7 @@ object RestApiUtil {
         val client: OkHttpClient = OkHttpClient.Builder()
             .addInterceptor(FirstFixedInterceptor())
             .addInterceptor(ChuckerInterceptor.Builder(app).createShortcut(true).build())
-            .addInterceptor(OtelTracingInterceptorUtil.TRACING_INTERCEPTOR)
+            .addInterceptor(OtelTracingInterceptorUtil.tracingInterceptor())
             .addInterceptor(SecondFixedInterceptor())
             .build()
         return Retrofit.Builder()

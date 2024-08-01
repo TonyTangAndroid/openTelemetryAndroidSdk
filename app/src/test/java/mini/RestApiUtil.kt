@@ -13,7 +13,7 @@ object RestApiUtil {
 
     fun restApi(server: MockWebServer): RestApi {
         val client: OkHttpClient = OkHttpClient.Builder()
-                .addInterceptor(OtelTracingInterceptorUtil.TRACING_INTERCEPTOR)
+                .addInterceptor(OtelTracingInterceptorUtil.tracingInterceptor())
                 .build()
         return Retrofit.Builder()
                 .client(client)
