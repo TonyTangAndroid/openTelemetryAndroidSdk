@@ -8,7 +8,6 @@ import com.google.gson.GsonBuilder
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockWebServer
-import okhttp_3_internal.OtelContextRequestTagInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -18,7 +17,6 @@ object RestApiUtil {
     fun retrofit(app: DemoApp, server: MockWebServer): Retrofit {
         val client: OkHttpClient = OkHttpClient.Builder()
             .addInterceptor(FirstFixedInterceptor())
-            .addInterceptor(OtelContextRequestTagInterceptor())
             .addInterceptor(ChuckerInterceptor.Builder(app).createShortcut(true).build())
             .addInterceptor(OtelTracingInterceptorUtil.TRACING_INTERCEPTOR)
             .addInterceptor(SecondFixedInterceptor())
