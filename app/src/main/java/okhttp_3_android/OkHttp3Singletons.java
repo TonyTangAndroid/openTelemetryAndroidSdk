@@ -5,8 +5,6 @@
 
 package okhttp_3_android;
 
-import static java.util.Collections.emptyList;
-
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import okhttp3.Interceptor;
 import okhttp_3_internal.OkHttpInstrumenterFactory;
@@ -22,15 +20,8 @@ public final class OkHttp3Singletons {
     public static final Interceptor TRACING_INTERCEPTOR =
             new TracingInterceptor(
                     OkHttpInstrumenterFactory.create(
-                            GlobalOpenTelemetry.get(),
-                            builder ->
-                            {
-                            },
-                            configure ->
-                            {
-                            },
-                            emptyList(),
-                            false),
+                            GlobalOpenTelemetry.get()
+                    ),
                     GlobalOpenTelemetry.getPropagators());
 
     private OkHttp3Singletons() {

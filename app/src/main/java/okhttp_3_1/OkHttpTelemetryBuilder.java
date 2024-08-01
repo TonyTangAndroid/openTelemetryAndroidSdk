@@ -112,11 +112,8 @@ public final class OkHttpTelemetryBuilder {
   public OkHttpTelemetry build() {
     return new OkHttpTelemetry(
         OkHttpInstrumenterFactory.create(
-            openTelemetry,
-            extractorConfigurer,
-            spanNameExtractorConfigurer,
-            additionalExtractors,
-            emitExperimentalHttpClientMetrics),
+            openTelemetry
+        ),
         openTelemetry.getPropagators());
   }
 }
