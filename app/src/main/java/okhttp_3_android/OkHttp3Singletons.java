@@ -6,7 +6,6 @@
 package okhttp_3_android;
 
 import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 
 import java.util.function.Supplier;
 
@@ -20,7 +19,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp_3_config.OkHttpInstrumentationConfig;
 import okhttp_3_internal.ConnectionErrorSpanInterceptor;
-import okhttp_3_internal.OkHttpAttributesGetter;
 import okhttp_3_internal.OkHttpInstrumenterFactory;
 import okhttp_3_internal.TracingInterceptor;
 
