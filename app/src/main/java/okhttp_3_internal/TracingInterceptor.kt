@@ -22,29 +22,35 @@ class TracingInterceptor(
 ) : Interceptor {
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
-        var request: Request = chain.request()
-        val parentContext = Context.current()
+        var rawRequest: Request = chain.request()
+        val parentContext =  context(rawRequest)
 
-        if (!instrumenter.shouldStart(parentContext, request)) {
+        if (!instrumenter.shouldStart(parentContext, rawRequest)) {
             return chain.proceed(chain.request())
         }
 
-        val context = instrumenter.start(parentContext, request)
-        request = injectContextToRequest(request, context)
+        val context = instrumenter.start(parentContext, rawRequest)
+        rawRequest = injectContextToRequest(rawRequest, context)
 
         var response: Response? = null
         var error: Throwable? = null
         try {
             context.makeCurrent().use {
-                response = chain.proceed(request)
+                response = chain.proceed(rawRequest)
                 return response!!
             }
         } catch (e: Exception) {
             error = e
             throw e
         } finally {
-            instrumenter.end(context, request, response, error)
+            instrumenter.end(context, rawRequest, response, error)
         }
+    }
+
+
+
+    private fun context(rawRequest: Request): Context {
+        return rawRequest.tag(Context::class.java)?:Context.current()
     }
 
     // Context injection is being handled manually for a reason: we want to use the OkHttp Request

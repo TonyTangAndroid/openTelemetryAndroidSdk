@@ -15,12 +15,16 @@ internal class OtelContextRequestTagInterceptor : Interceptor {
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         val rawRequest = chain.request()
-        val context = rawRequest.tag(Context::class.java)
+        val context = context(rawRequest)
         return if (context != null) {
             chain.proceed(injectContext(context, rawRequest))
         } else {
             chain.proceed(rawRequest)
         }
+    }
+
+    private fun context(rawRequest: Request): Context? {
+        return rawRequest.tag(Context::class.java)
     }
 
     private fun injectContext(context: Context, rawRequest: Request): Request {
