@@ -29,6 +29,12 @@ object ContextPropagationUtil {
                 .build()
     }
 
+    fun httpMerged(context: Context): Baggage {
+        return Baggage.fromContext(context).toBuilder()
+                .put("http_merged", System.currentTimeMillis().toString())
+                .build()
+    }
+
 
     fun attachedSendingNetwork(context: Context): Baggage {
         return Baggage.fromContext(context).toBuilder()

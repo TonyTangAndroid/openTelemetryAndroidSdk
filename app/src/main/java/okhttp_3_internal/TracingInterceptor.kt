@@ -10,6 +10,8 @@ import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
+import ui.ContextPropagationUtil.attachedLocationFetched
+import ui.ContextPropagationUtil.httpMerged
 import java.io.IOException
 
 /**
@@ -23,7 +25,7 @@ class TracingInterceptor(
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         var rawRequest: Request = chain.request()
-        val parentContext =  context(rawRequest)
+        val parentContext = context(rawRequest)
 
         if (!instrumenter.shouldStart(parentContext, rawRequest)) {
             return chain.proceed(chain.request())
@@ -48,9 +50,13 @@ class TracingInterceptor(
     }
 
 
-
     private fun context(rawRequest: Request): Context {
-        return rawRequest.tag(Context::class.java)?:Context.current()
+        val context = rawContext(rawRequest) ?: Context.current()
+        return context.with(httpMerged(context))
+    }
+
+    private fun rawContext(rawRequest: Request): Context? {
+        return rawRequest.tag(Context::class.java)
     }
 
     // Context injection is being handled manually for a reason: we want to use the OkHttp Request
