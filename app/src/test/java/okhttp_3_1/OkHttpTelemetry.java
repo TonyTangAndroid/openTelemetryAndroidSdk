@@ -8,14 +8,14 @@ package okhttp_3_1;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.context.propagation.ContextPropagators;
 import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter;
-import io.opentelemetry.instrumentation.okhttp.v3_0.internal.ConnectionErrorSpanInterceptor;
-import io.opentelemetry.instrumentation.okhttp.v3_0.internal.TracingInterceptor;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp_3_internal.ConnectionErrorSpanInterceptor;
+import okhttp_3_internal.TracingInterceptor;
 
 /** Entrypoint for instrumenting OkHttp clients. */
 public final class OkHttpTelemetry {

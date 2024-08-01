@@ -5,7 +5,6 @@
 
 package okhttp_3_config;
 
-import io.opentelemetry.instrumentation.api.incubator.semconv.net.PeerServiceResolver;
 import io.opentelemetry.instrumentation.api.internal.HttpConstants;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -94,10 +93,6 @@ public final class OkHttpInstrumentationConfig {
      */
     public static void setPeerServiceMapping(Map<String, String> peerServiceMapping) {
         OkHttpInstrumentationConfig.peerServiceMapping = new HashMap<>(peerServiceMapping);
-    }
-
-    public static PeerServiceResolver newPeerServiceResolver() {
-        return PeerServiceResolver.create(peerServiceMapping);
     }
 
     /**

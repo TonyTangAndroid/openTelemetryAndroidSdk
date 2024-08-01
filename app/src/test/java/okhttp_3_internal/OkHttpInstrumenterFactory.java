@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import io.opentelemetry.api.OpenTelemetry;
-import io.opentelemetry.instrumentation.api.incubator.semconv.http.HttpClientExperimentalMetrics;
-import io.opentelemetry.instrumentation.api.incubator.semconv.http.HttpExperimentalAttributesExtractor;
 import io.opentelemetry.instrumentation.api.instrumenter.AttributesExtractor;
 import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter;
 import io.opentelemetry.instrumentation.api.instrumenter.InstrumenterBuilder;
@@ -58,9 +56,6 @@ public final class OkHttpInstrumenterFactory {
             .addAttributesExtractors(additionalAttributesExtractors)
             .addOperationMetrics(HttpClientMetrics.get());
     if (emitExperimentalHttpClientMetrics) {
-      builder
-          .addAttributesExtractor(HttpExperimentalAttributesExtractor.create(httpAttributesGetter))
-          .addOperationMetrics(HttpClientExperimentalMetrics.get());
     }
 
     return builder.buildInstrumenter(alwaysClient());

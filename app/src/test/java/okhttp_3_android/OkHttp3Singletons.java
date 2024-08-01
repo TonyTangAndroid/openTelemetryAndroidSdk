@@ -5,6 +5,7 @@
 
 package okhttp_3_android;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
 import java.util.function.Supplier;
@@ -12,7 +13,6 @@ import java.util.function.Supplier;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
-import io.opentelemetry.instrumentation.api.incubator.semconv.net.PeerServiceAttributesExtractor;
 import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter;
 import io.opentelemetry.instrumentation.api.semconv.http.HttpClientRequestResendCount;
 import okhttp3.Interceptor;
@@ -48,11 +48,7 @@ public final class OkHttp3Singletons {
                                     spanNameExtractorConfigurer ->
                                             spanNameExtractorConfigurer.setKnownMethods(
                                                     OkHttpInstrumentationConfig.getKnownMethods()),
-                                    singletonList(
-                                            PeerServiceAttributesExtractor.create(
-                                                    OkHttpAttributesGetter.INSTANCE,
-                                                    OkHttpInstrumentationConfig
-                                                            .newPeerServiceResolver())),
+                                    emptyList(),
                                     OkHttpInstrumentationConfig
                                             .emitExperimentalHttpClientMetrics()));
 
