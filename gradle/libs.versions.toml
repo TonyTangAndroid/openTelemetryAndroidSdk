@@ -21,6 +21,7 @@ constraintlayout = "2.1.4"
 navigationFragmentKtx = "2.7.7"
 navigationUiKtx = "2.7.7"
 opentelemetryExtensionTracePropagatorsVersion = "1.24.0"
+opentelemetryInstrumentationApiVersion = "2.6.0"
 playServicesLocationVersion = "21.2.0"
 preferenceVersion = "1.2.1"
 retrofitVersion = "2.9.0"
@@ -38,6 +39,7 @@ converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref
 chuck-library = { module = "com.github.chuckerteam.chucker:library", version.ref = "chuckLibraryVersion" }
 chuck-library-no-op = { module = "com.github.chuckerteam.chucker:library-no-op", version.ref = "chuckLibraryVersion" }
 guava = { module = "com.google.guava:guava", version.ref = "guavaVersion" }
+instrumentation-opentelemetry-instrumentation-api = { module = "io.opentelemetry.instrumentation:opentelemetry-instrumentation-api", version.ref = "opentelemetryInstrumentationApiVersion" }
 opentelemetry-extension-trace-propagators = { module = "io.opentelemetry:opentelemetry-extension-trace-propagators", version.ref = "opentelemetryExtensionTracePropagatorsVersion" }
 opentelemetry-platform = { module = "io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom-alpha", version.ref = "opentelemetry-alpha" }
 androidx-appcompat = "androidx.appcompat:appcompat:1.6.1"

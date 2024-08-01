@@ -42,10 +42,7 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation (libs.play.services.location)
     implementation(libs.guava)
-    implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-api:2.6.0")
-    implementation("io.opentelemetry.semconv:opentelemetry-semconv:1.26.0-alpha")
-    runtimeOnly("io.opentelemetry:opentelemetry-api-incubator:1.40.0-alpha")
-
+    implementation(libs.instrumentation.opentelemetry.instrumentation.api)
     debugImplementation (libs.chuck.library)
     releaseImplementation (libs.chuck.library.no.op)
     testImplementation(libs.junit)
