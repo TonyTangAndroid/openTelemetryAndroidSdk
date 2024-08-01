@@ -3,7 +3,6 @@ package app
 import android.app.Application
 import com.uber.autodispose.ScopeProvider
 import com.uber.autodispose.autoDispose
-import io.opentelemetry.context.propagation.ContextPropagators
 import io.opentelemetry.sdk.testing.exporter.InMemorySpanExporter
 import io.opentelemetry.sdk.trace.data.SpanData
 import network.AppLaunchResult
@@ -13,7 +12,6 @@ import network.SingleApi
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import repo.AppLaunchRepo
-import retrofit2.Retrofit
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -22,19 +20,19 @@ class DemoApp : Application(), AppScope {
     private val server = MockWebServer()
     private val inMemorySpanExporter = InMemorySpanExporter.create()
 
+    private val retrofit by lazy {
+        RestApiUtil.retrofit(this, server)
+    }
 
-    private val contextPropagators: ContextPropagators by lazy {
-        OpenTelemetryUtil.contextPropagators()
+    private val singleApi by lazy {
+        retrofit.create(SingleApi::class.java)
     }
 
     override fun onCreate() {
         super.onCreate()
         AppDelegatePreInitUtil.init()
         plantTimberLogger()
-        OpenTelemetryUtil.configOpenTelemetry(
-            inMemorySpanExporter,
-            contextPropagators
-        )
+        OpenTelemetryUtil.configOpenTelemetry(inMemorySpanExporter)
         MockWebServerUtil.initServer(server)
         TracingUtil.startSpan()
         initHeavyOperation()
@@ -44,7 +42,7 @@ class DemoApp : Application(), AppScope {
 
     private fun initHeavyOperation() {
         AppLaunchRepo(appContext = AppContext(this)).notifyAppLaunch(
-            OtelContextUtil.appScopeContext(), AppScopeUtil.coldLaunchModel()
+                OtelContextUtil.appScopeContext(), AppScopeUtil.coldLaunchModel()
         ).autoDispose(ScopeProvider.UNBOUND).subscribe(this::onAppLaunchResultFetched)
         delayColdLaunch()
     }
@@ -73,11 +71,7 @@ class DemoApp : Application(), AppScope {
     }
 
     override fun singleApi(): SingleApi {
-        return retrofit().create(SingleApi::class.java)
-    }
-
-    private fun retrofit(): Retrofit {
-        return RestApiUtil.retrofit(this, server, contextPropagators)
+        return singleApi
     }
 
     override fun recordedRequest(): RecordedRequest? {
